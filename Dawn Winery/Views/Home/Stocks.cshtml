@@ -1,5 +1,60 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Stocks";
 }
+
+<style>
+    body {
+        background-color: #802539;
+    }
+
+    .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #fadadd; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+
+    #button-container {
+        display: inline-grid;
+        justify-content: center;
+    }
+</style>
+<div></div>
+<img id="mainMenu" src="~/css/mmenu.png" alt="winecat" style="margin-left: 5%; margin-top: 10%; ">
+
+<div id="button-container">
+    <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column; margin-left: 80%; margin-top: 4%">
+            <img src="~/css/uretim.png" alt="mainMenuButton">
+            STOCKS
+        </button>
+    </form>
+
+    <form action="@Url.Action("Receipes", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column; margin-left: 80%;  margin-top: 10%">
+            <img src="~/css/uretim.png" alt="mainMenuButton">
+            RECEIPES
+        </button>
+    </form>
+
+    <form action="@Url.Action("Index", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column; margin-left: 80%;  margin-top: 10%">
+            <img src="~/css/uretim.png" alt="mainMenuButton">
+            EXIT
+        </button>
+    </form>
+</div>
+<img id="mainMenu2" src="~/css/mainMenu.png" alt="winecat" style="margin-top: 14%; margin-left: 20%;">
