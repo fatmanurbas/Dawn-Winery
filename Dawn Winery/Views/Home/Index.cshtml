@@ -2,7 +2,53 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    body {
+        background-color: #802539;
+    }
+
+    #mainpage-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+     }
+     #button-container{
+        flex-direction: column;
+    }
+    .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #FADADD; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+</style>
+
+<div id="mainpage-container">
+    <h1 style="color:#FADADD">D A W N</h1>
+    <img id="mainpage" src="~/css/mainPage.png" alt="winecat" style="width:495px; height: 495px;">
+    <h1 style="color:#FADADD">W I N E R Y</h1>
 </div>
+
+<div id="button-container">
+    <form action="@Url.Action("Menu", "Home")" method="get">
+        <button class="custom-button" style="flex-direction: column; margin-left: 45%;" >
+            <img src="~/css/mainMenu2.png" alt="mainMenuButton">
+            MAIN MENU
+        </button>
+    </form>
+
+</div>
+ 
