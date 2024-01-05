@@ -5,6 +5,10 @@
 <style>
     body {
         background-color: #802539;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
     }
 
     .custom-button {
@@ -27,34 +31,51 @@
             /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
         }
 
-    #button-container {
-        display: inline-grid;
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Butonları sola hizala */
         justify-content: center;
+        width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
+        padding: 20px;
     }
+
+    .image-container {
+        width: 75%; /* Ekranın sol tarafını kaplaması için genişlik */
+    }
+
+        .image-container img {
+            width: 100%; /* İsteğe bağlı: Görseli tam genişlikte göster */
+            height: auto; /* İsteğe bağlı: Oranları koruyarak görsel boyutunu ayarla */
+        }
 </style>
-<div></div>
-<img id="mainMenu" src="~/css/mmenu.png" alt="winecat" style="margin-left: 5%; margin-top: 10%; ">
 
-<div id="button-container">
-    <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
-        <button class="custom-button" style="flex-direction: column; margin-left: 80%; margin-top: 4%">
+<div class="button-container">
+    <form action="@Url.Action("Hammadde", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column;  margin-left: 40px; margin-top: 90px">
             <img src="~/css/uretim.png" alt="mainMenuButton">
-            STOCKS
+            Raw Materials
         </button>
     </form>
 
-    <form action="@Url.Action("Receipes", "Home")" method="get" style="width:150px;">
-        <button class="custom-button" style="flex-direction: column; margin-left: 80%;  margin-top: 10%">
+    <form action="@Url.Action("Uretim", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column;  margin-left: 40px;  margin-top: 10px">
             <img src="~/css/uretim.png" alt="mainMenuButton">
-            RECEIPES
+            Production
         </button>
     </form>
 
-    <form action="@Url.Action("Index", "Home")" method="get" style="width:150px;">
-        <button class="custom-button" style="flex-direction: column; margin-left: 80%;  margin-top: 10%">
+    <form action="@Url.Action("Mamul", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
             <img src="~/css/uretim.png" alt="mainMenuButton">
-            EXIT
+            Finished Products
+        </button>
+    </form>
+    <form action="@Url.Action("Menu", "Home")" method="get" style="width:150px;">
+        <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+            <img src="~/css/uretim.png" alt="mainMenuButton">
+            Back
         </button>
     </form>
 </div>
-<img id="mainMenu2" src="~/css/mainMenu.png" alt="winecat" style="margin-top: 14%; margin-left: 20%;">
+    <img id="stock" src="~/css/stocks.png" alt="winecat" style="position:fixed; top: 70px; right: 200px">

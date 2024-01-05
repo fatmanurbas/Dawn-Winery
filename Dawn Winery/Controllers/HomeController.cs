@@ -34,7 +34,18 @@ namespace Dawn_Winery.Controllers
         {
             return View();
         }
-
+        public IActionResult Hammadde()
+        {
+            return View();
+        }
+        public IActionResult Uretim()
+        {
+            return View();
+        }
+        public IActionResult Mamul()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
