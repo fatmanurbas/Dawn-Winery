@@ -1,4 +1,5 @@
-﻿using Dawn_Winery.Models;
+﻿using Dawn_Winery.Data;
+using Dawn_Winery.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,10 +8,12 @@ namespace Dawn_Winery.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly AppDbContext _appDbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _appDbContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public IActionResult Index()
@@ -28,12 +31,16 @@ namespace Dawn_Winery.Controllers
         }
         public IActionResult Receipes()
         {
-            return View();
+           
+                return View();
+            
         }
         public IActionResult Stocks()
         {
             return View();
         }
+
+
         public IActionResult Hammadde()
         {
             return View();
