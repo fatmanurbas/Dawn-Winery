@@ -10,9 +10,9 @@ namespace Dawn_Winery.Data
         {
         }
 
-        public DbSet<EndProducts>? EndProducts { get; set; }
-        public DbSet<RawMaterials>? RawMaterials { get; set; }
-        public DbSet<Receipes>? Receipes { get; set; }
+        public DbSet<EndProduct>? EndProduct { get; set; }
+        public DbSet<RawMaterial>? RawMaterial { get; set; }
+        public DbSet<Receipe>? Receipe { get; set; }
         public DbSet<Employee>? Employees { get; set; }
 
         

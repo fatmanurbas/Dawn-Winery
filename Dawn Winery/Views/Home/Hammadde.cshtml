@@ -1,5 +1,63 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<RawMaterial>
+ 
+<h2>Raw Materials</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Hid</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Alcohol</th>
+            <th>Sweet</th>
+            <th>Acidity</th>
+            <th>Body</th>
+            <th>Tannin</th>
+            <th>Quality</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grape in Model)
+        {
+            <tr>
+                <td>@grape.Hid</td>
+                <td>@grape.Hname</td>
+                <td>@(grape.Type ? "White" : "Red")</td>
+                <td>@grape.Alcohol</td>
+                <td>@grape.Sweet</td>
+                <td>@grape.Acidity</td>
+                <td>@grape.Body</td>
+                <td>@grape.Tannin</td>
+                <td>@grape.Quality</td>
+                <td>
+                    <span id="stock-@grape.Hid">@grape.Stock</span> kg
+                    <button onclick="updateStock('@grape.Hid', 100)">Add 100 kg</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
+    <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+        <img src="~/css/uretim.png" alt="mainMenuButton">
+        Back
+    </button>
+</form>
+<script>
+    function updateStock(hid, quantityToAdd) {
+        $.ajax({
+            type: "POST",
+            url: "/Home/UpdateGrapeStock", // doğru URL'yi buraya girin
+            data: { hid: hid, quantityToAdd: quantityToAdd },
+            success: function (result) {
+                // Stok güncellendikten sonra sayfayı yenileme
+                location.reload();
+            },
+            error: function (error) {
+                console.error("Stock update failed:", error);
+            }
+        });
+    }
+</script>
+

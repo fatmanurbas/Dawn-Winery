@@ -1,5 +1,115 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<Receipe>
+
+    <style>
+         .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #fadadd; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Butonları sola hizala */
+        justify-content: center;
+        width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
+        padding: 20px;
+    }
+    </style>
+<!-- Modal -->
+<div id="recipeModal" class="modal">
+    <div class="modal-content">
+        <!-- Detayları göstermek için gerekli HTML kodunu buraya ekleyin -->
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div id="recipeDetails"></div>
+    </div>
+</div>
+
+<!-- Tablo -->
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Receipe Name</th>
+            <!-- Diğer başlıklar -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr onclick="openModal('@item.Rname', '@item.Type', '@item.SO2', '@item.Grape1', '@item.G1Kilo', '@item.Grape2', '@item.G2Kilo', '@item.Grape3', '@item.G3Kilo', '@item.Grape4', '@item.G4Kilo', '@item.Grape5', '@item.G5Kilo', '@item.Grape6', '@item.G6Kilo')">
+                <td class="align-middle"></td>
+                <td class="align-middle">
+                    @Html.DisplayFor(modelItem => item.Rname)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form action="@Url.Action("Menu", "Home")" method="get" style="width:150px;">
+    <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+        <img src="~/css/uretim.png" alt="mainMenuButton">
+        Back
+    </button>
+</form>
+<script>
+    function openModal(recipeName, type, so2, grape1, g1Kilo, grape2, g2Kilo, grape3, g3Kilo, grape4, g4Kilo, grape5, g5Kilo, grape6, g6Kilo) {
+        var modal = document.getElementById("recipeModal");
+        var detailsContainer = document.getElementById("recipeDetails");
+
+        // Kontrol et: Dolu olan satırları modal içinde göster
+        var modalContent = "";
+
+        modalContent += `<h2>${recipeName}</h2>`;
+        if (type.toString().toLowerCase() === 'true') {
+            modalContent += `<p><strong>Type:</strong> White</p>`;
+        } else {
+            modalContent += `<p><strong>Type:</strong> Red</p>`;
+        }
+        modalContent += `<p><strong>SO2:</strong> ${so2} Ppm</p>`;
+        modalContent += `<p><strong>First Grape's Name:</strong> ${grape1} - ${g1Kilo} Kilo</p>`;
+
+        if (grape2 && g2Kilo) {
+            modalContent += `<p><strong>Second Grape's Name:</strong> ${grape2} - ${g2Kilo} Kilo</p>`;
+        }
+
+        if (grape3 && g3Kilo) {
+            modalContent += `<p><strong>Third Grape's Name:</strong> ${grape3} - ${g3Kilo} Kilo</p>`;
+        }
+        // Dolu olan satırları kontrol et ve modal içine ekleyin
+        if (grape4 && g4Kilo) {
+            modalContent += `<p><strong>Fourth Grape's Name:</strong> ${grape4} - ${g4Kilo} Kilo</p>`;
+        }
+
+        if (grape5 && g5Kilo) {
+            modalContent += `<p><strong>Fifth Grape's Name:</strong> ${grape5} - ${g5Kilo} Kilo</p>`;
+        }
+
+        if (grape6 && g6Kilo) {
+            modalContent += `<p><strong>Sixth Grape's Name:</strong> ${grape6} - ${g6Kilo} Kilo</p>`;
+        }
+
+        detailsContainer.innerHTML = modalContent;
+
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        var modal = document.getElementById("recipeModal");
+        modal.style.display = "none";
+    }
+</script>

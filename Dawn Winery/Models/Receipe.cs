@@ -4,6 +4,7 @@ namespace Dawn_Winery.Models
 {
     public class Receipe
     {
+        [Display(Name = "Receipe Name")]
         [Key] public string? Rname { get; set; }
         public bool Type { get; set; }
         public string? Grape1 { get; set; }

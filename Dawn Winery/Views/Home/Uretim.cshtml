@@ -1,5 +1,62 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<Receipe>
+
+<button onclick="showReceipes()">Şarap Üret</button>
+
+<!-- Receipe Tablosu -->
+<div id="receipeTable" style="display:none;">
+    <h2>Receipe Listesi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Receipe ID</th>
+                <th>Receipe Name</th>
+                <!-- Diğer receipe özellikleri -->
+                <th>Üzümleri Kullan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Receipe verileri burada foreach veya başka bir döngü ile doldurulacak -->
+            @foreach (var grape in Model)
+        {
+            <tr>
+                    <td>@grape.Rname</td>
+                    <td>@(grape.Type ? "White" : "Red")</td>
+
+                <td>
+                        <button onclick="produceWine('@grape.Rname', 10)">Üzümleri Kullan</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+ 
+<form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
+    <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+        <img src="~/css/uretim.png" alt="mainMenuButton">
+        Back
+    </button>
+</form>
+<script>
+    function showReceipes() {
+        // Şarap üret butonuna tıklandığında Receipe tablosunu göster
+        document.getElementById("receipeTable").style.display = "block";
+    }
+
+    function produceWine(receipeId, bottleCount) {
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/ProduceWine", // doğru URL'yi buraya girin
+            data: { receipeId: receipeId, bottleCount: 1 },
+                success: function (result) {
+                    // Stok güncellendikten sonra sayfayı yenileme
+                    location.reload();
+                },
+                error: function (error) {
+                alert("Üzümleri kullanma işlemi tamamlandı. Şarap üretildi!");
+                }
+            });
+              
+    }
+</script>

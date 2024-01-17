@@ -12,6 +12,6 @@ namespace Dawn_Winery.Models
 
         public int Milil { get; set; }
         public int Bottle { get; set; }
-
+        public int Stock { get; set; }
     }
 }

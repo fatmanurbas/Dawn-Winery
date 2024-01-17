@@ -1,5 +1,36 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model List<EndProduct>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Wine Name</th>
+            <th>Production Year</th>
+            <th>Type</th>
+            <th>Aging</th>
+            <th>Milliliter</th>
+            <th>Bottle</th>
+            <th>Quality</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grape in Model)
+        {
+            <tr>
+                <td>@grape.Mname</td>
+                <td>@grape.Year</td>
+                <td>@(grape.Type ? "White" : "Red")</td>
+                <td>@grape.Aging</td>
+                <td>@grape.Milil</td>
+                <td>@grape.Bottle</td>
+                <td>@grape.Quality</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+<form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
+    <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+        <img src="~/css/uretim.png" alt="mainMenuButton">
+        Back
+    </button>
+</form>

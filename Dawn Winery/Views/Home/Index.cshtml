@@ -15,6 +15,8 @@
      }
      #button-container{
         flex-direction: column;
+        position: absolute;
+        top: 64%;
     }
     .custom-button {
         display: flex;
@@ -23,9 +25,9 @@
         left: 300px;
         width: 150px;
         height: 100px;
-        background-color: #FADADD; /* Butonun arka plan rengi */
-        color: #8e5b68; /* Buton metni rengi */
-        border: none;
+        background-color: #81b7a9; /* Butonun arka plan rengi */
+        color: #FADADD; /* Buton metni rengi */
+        border: 2px solid black;
         border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
         cursor: pointer;
     }
@@ -38,15 +40,16 @@
 </style>
 
 <div id="mainpage-container">
-    <h1 style="color:#FADADD">* D A W N *</h1>
-    <img id="mainpage" src="~/css/mainPage.png" alt="winecat" style="width:495px; height: 495px;">
+    <h1 style="color:#FADADD">♕ ↁ A W N</h1>
+    <img id="mainpage" src="~/css/anasayfa.png" alt="winecat" style="width:351px; height: 561px;">
     <h1 style="color:#FADADD">W I N E R Y</h1>
+
 </div>
 
 <div id="button-container">
     <form action="@Url.Action("Menu", "Home")" method="get">
-        <button class="custom-button" style="flex-direction: column; margin-left: 45%;" >
-            <img src="~/css/mainMenu2.png" alt="mainMenuButton">
+        <button class="custom-button" style="flex-direction: column; margin-left: 330%;" >
+            <img src="~/css/uretim.png" alt="mainMenuButton">
             MAIN MENU
         </button>
     </form>

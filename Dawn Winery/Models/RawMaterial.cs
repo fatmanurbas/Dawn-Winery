@@ -13,5 +13,6 @@ namespace Dawn_Winery.Models
         public int Body { get; set; }
         public int Tannin { get; set; }
         public int Stock { get; set; }
+        public int Quality { get; set; }
     }
 }

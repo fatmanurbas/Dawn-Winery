@@ -14,10 +14,10 @@ namespace Dawn_Winery.Data
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
                 context.Database.Migrate();
 
-                if (context.Receipes != null && !context.Receipes.Any())
+                if (context.Receipe != null && !context.Receipe.Any())
                 {
-                    context.Receipes.AddRange(new List<Receipes>()
-                    { new Receipes()
+                    context.Receipe.AddRange(new List<Receipe>()
+                    { new Receipe()
                     {
                         Type = true,
                         Grape1 = "prosecco",
@@ -29,10 +29,10 @@ namespace Dawn_Winery.Data
                         ); 
                     context.SaveChanges();
                 }
-                if (context.RawMaterials != null && !context.RawMaterials.Any())
+                if (context.RawMaterial != null && !context.RawMaterial.Any())
                 {
-                    context.RawMaterials.AddRange(new List<RawMaterials>()
-                    {new RawMaterials()
+                    context.RawMaterial.AddRange(new List<RawMaterial>()
+                    {new RawMaterial()
                     {
                         Hid = "airen",
                         Hname = "Airen",
@@ -42,7 +42,8 @@ namespace Dawn_Winery.Data
                         Acidity = 3,
                         Body = 2,
                         Tannin = 1, 
-                        Stock = 500
+                        Stock = 500,
+                        Quality = 4
                     }
 
                     }
@@ -50,10 +51,10 @@ namespace Dawn_Winery.Data
                     context.SaveChanges();
 
                 }
-                if (context.EndProducts != null && !context.EndProducts.Any())
+                if (context.EndProduct != null && !context.EndProduct.Any())
                 {
-                    context.EndProducts.AddRange(new List<EndProducts>()
-                    { new EndProducts()
+                    context.EndProduct.AddRange(new List<EndProduct>()
+                    { new EndProduct()
                     {
                         Mname = "Akabane",
                         Year = 2018,
@@ -61,7 +62,8 @@ namespace Dawn_Winery.Data
                         Quality = 7,
                         Type = false,
                         Milil = 750,
-                        Bottle = 300
+                        Bottle = 300,
+                        Stock = 200
                     }
 
                     }
