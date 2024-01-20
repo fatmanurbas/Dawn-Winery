@@ -1,6 +1,40 @@
 ﻿@model List<EndProduct>
+<style>
+    body {
+        background-color: #802539;
+         
+    }
 
-<table class="table">
+    .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #fadadd; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Butonları sola hizala */
+        justify-content: center;
+        width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
+        padding: 20px;
+    }
+</style>
+<table class="table" style="color:#FADADD">
     <thead>
         <tr>
             <th>Wine Name</th>
@@ -30,7 +64,7 @@
 </table>
 <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
     <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
-        <img src="~/css/uretim.png" alt="mainMenuButton">
+        <img src="~/css/buton.png" alt="mainMenuButton">
         Back
     </button>
 </form>

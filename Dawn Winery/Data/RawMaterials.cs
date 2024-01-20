@@ -10,7 +10,7 @@
         public int Acidity { get; set; }
         public int Body { get; set; }
         public int Tannin { get; set; }
-        public int Stock { get; set; }
+        public float Stock { get; set; }
         public int Quality { get; set; }
 
     }

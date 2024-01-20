@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using Prolog;
@@ -132,11 +133,10 @@ namespace Dawn_Winery.Prolog
         }
         //aging(Grapes, Tons, Year)
 
-        public string make_recipes(string Grapenames, string Tons)
+        public Tuple<string[][], float[][], int[], int[]> make_recipes(string Grapenames, string Tons)
         {
-            string sonuc = "Sonuç bulunamadı";
 
-            string query = $"make_recipes([{Grapenames}], [{Tons}], RecipesN, RecipesT, Qualitys, Total).";
+            string query = $@"make_recipes([{Grapenames}], [{Tons}], RecipesN, RecipesT, Qualitys, Total).";
 
             var solution = prolog.GetFirstSolution(query: query);
 
@@ -149,21 +149,98 @@ namespace Dawn_Winery.Prolog
                 Match qMatch = Regex.Match(solutionString, @"Qualitys = (\[.*\])");
                 Match tMatch = Regex.Match(solutionString, @"Total = (\[.*\])");
 
+
+
+
                 if (rnMatch.Success && tMatch.Success)
                 {
                     string recipesNValue = rnMatch.Groups[1].Value;
+
+                    // Köşeli parantezleri ve içindeki virgülü kullanarak ayırma
+                    string[] recipeNArray = recipesNValue
+                        .Replace("[[", "")  // İlk baştaki iki köşeli parantezi kaldır
+                        .Replace("]]", "")  // İlk sondaki iki köşeli parantezi kaldır
+                        .Split(new string[] { "], [" }, StringSplitOptions.None);
+
+                    // Her bir öğeyi virgül ile ayırarak iç içe dizileri oluştur
+                    string[][] recipeName = new string[recipeNArray.Length][];
+                    for (int i = 0; i < recipeNArray.Length; i++)
+                    {
+                        recipeName[i] = recipeNArray[i].Split(',');
+                    }
+
+
                     string recipesTValue = rtMatch.Groups[1].Value;
+
+                    // Köşeli parantezleri ve içindeki virgülü kullanarak ayırma
+                    string[] recipeTArray = recipesTValue
+                        .Replace("[[", "")  // İlk baştaki iki köşeli parantezi kaldır
+                        .Replace("]]", "")  // İlk sondaki iki köşeli parantezi kaldır
+                        .Split(new string[] { "], [" }, StringSplitOptions.None);
+
+                    // Her bir öğeyi virgül ile ayırarak iç içe dizileri oluştur
+                    float[][] recipeT = new float[recipeTArray.Length][];
+                    for (int i = 0; i < recipeTArray.Length; i++)
+                    {
+                        string[] innerArray = recipeTArray[i].Split(',');
+                        recipeT[i] = new float[innerArray.Length];
+
+                        for (int j = 0; j < innerArray.Length; j++)
+                        {
+                            if (float.TryParse(innerArray[j], NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
+                            {
+                                recipeT[i][j] = result;
+                            }
+                        }
+                    }
+
+
                     string qualitysValue = qMatch.Groups[1].Value;
+
+                    string[] qualityArray = qualitysValue
+                        .Replace("[", "")  // İlk baştaki köşeli parantezi kaldır
+                        .Replace("]", "")  // İlk sondaki köşeli parantezi kaldır
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Her bir öğeyi int'e çevirerek quality dizisini oluştur
+                    int[] quality = new int[qualityArray.Length];
+                    for (int i = 0; i < qualityArray.Length; i++)
+                    {
+                        if (int.TryParse(qualityArray[i], out int result))
+                        {
+                            quality[i] = result;
+                        }
+
+                    }
+
+
                     string totalValue = tMatch.Groups[1].Value;
 
-                    sonuc = $"{recipesNValue}:::::{recipesTValue}:::::{qualitysValue}:::::{totalValue}";
+                    string[] totalArray = totalValue
+                        .Replace("[", "")  // İlk baştaki köşeli parantezi kaldır
+                        .Replace("]", "")  // İlk sondaki köşeli parantezi kaldır
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    // Her bir öğeyi int'e çevirerek quality dizisini oluştur
+                    int[] total = new int[totalArray.Length];
+                    for (int i = 0; i < totalArray.Length; i++)
+                    {
+                        if (int.TryParse(totalArray[i], out int result))
+                        {
+                            total[i] = result;
+                        }
+
+                    }
+
+                    return Tuple.Create(recipeName, recipeT, quality, total);
                 }
+
+
             }
 
-            return sonuc;
+            return null;
         }
-
-
+ 
 
         //make_recipes(Grapenames, Tons, Recipes,Total)
 

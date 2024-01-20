@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Dawn_Winery.Controllers
 {
@@ -11,10 +12,13 @@ namespace Dawn_Winery.Controllers
     {
 
         private readonly AppDbContext _appDbContext;
+        private readonly Prolog.Prolog _prolog;
 
         public HomeController( AppDbContext context)
         {
             _appDbContext = context;
+            _prolog = new Prolog.Prolog();
+
         }
 
         public IActionResult Index()
@@ -79,7 +83,7 @@ namespace Dawn_Winery.Controllers
 
                 // Şarap üretildiğinde kullanılan üzümlerin stok değerlerini güncelleme
                 var usedGrapes = new List<string> { receipe.Grape1, receipe.Grape2, receipe.Grape3, receipe.Grape4, receipe.Grape5, receipe.Grape6 };
-                int reductionRate = 1;
+                float reductionRate = 1;
 
                  foreach (var grapeName in usedGrapes)
                 {
@@ -96,13 +100,30 @@ namespace Dawn_Winery.Controllers
                         {
                             reductionRate = receipe.G2Kilo ?? 0; 
                         }
-                        int requiredStock = bottleCount * reductionRate; // Üretim için gereken toplam miktar
+                        else if (grapeName == receipe.Grape3)
+                        {
+                            reductionRate = receipe.G3Kilo ?? 0;
+                        }
+                        else if (grapeName == receipe.Grape4)
+                        {
+                            reductionRate = receipe.G4Kilo ?? 0;
+                        }
+                        else if (grapeName == receipe.Grape5)
+                        {
+                            reductionRate = receipe.G5Kilo ?? 0;
+                        }
+                        else if (grapeName == receipe.Grape6)
+                        {
+                            reductionRate = receipe.G6Kilo ?? 0;
+                        }
+                         
+                        float requiredStock = bottleCount * reductionRate; // Üretim için gereken toplam miktar
 
                         if (grape.Stock < requiredStock)
                         {
                             return StatusCode(500, "Internal Server Error");
                         }
-                        grape.Stock -= bottleCount * reductionRate;
+                        grape.Stock -= requiredStock;
                     }
                 }
                 var existingWine = _appDbContext.EndProduct.FirstOrDefault(w => w.Mname == receipe.Rname);
@@ -110,7 +131,7 @@ namespace Dawn_Winery.Controllers
                 if (existingWine != null)
                 {
                     // Eğer varsa, mevcut şarap nesnesinin Bottle (şişe) değerini arttır
-                    existingWine.Bottle += bottleCount; // veya istediğiniz miktarı ekleyin
+                    existingWine.Bottle += 1200; // veya istediğiniz miktarı ekleyin
                 }
 
                 _appDbContext.SaveChanges();
@@ -118,6 +139,66 @@ namespace Dawn_Winery.Controllers
             }
 
             return RedirectToAction("Uretim");
+        }
+
+        [HttpPost]
+        public ActionResult GenerateRecipes(string wineName)
+        {
+            // Veritabanından üzüm bilgilerini çek
+            string[] hids = _appDbContext.RawMaterial.Select(rm => rm.Hid).ToArray();
+            string[] stocks = _appDbContext.RawMaterial.Select(rm => rm.Stock.ToString()).ToArray();
+            string names = string.Join(",", hids[0]);
+            for(int i = 1; i< 6; i++)
+            {
+                 names = names + "," + string.Join(",", hids[i]);
+            }
+             
+            string[] stringNumbers = new string[6];
+            string ton = string.Join(",", stocks[0]);
+            for (int i = 1; i < 6; i++)
+            {
+                ton = ton + "," + string.Join(",", stocks[i]);
+             }
+
+            // Diziyi virgülle ayırarak birleştir
+ 
+            var result = _prolog.make_recipes(names, ton);
+
+             
+
+            if (result != null)
+            {
+                // Çözümü çöz ve Receipe nesnelerini oluştur
+                for (int i = 0; i < result.Item1.Length; i++)
+                {
+                    var receipe = new Receipe
+                    {
+                        Rname = "AAA",
+                        Type = false,
+                        Grape1 = result.Item1[i][0],
+                        G1Kilo = result.Item2[i][0],
+                        Grape2 = result.Item1[i][1],
+                        G2Kilo = result.Item2[i][1],
+                        Grape3 = result.Item1[i][2],
+                        G3Kilo = result.Item2[i][2],
+                        Grape4 = result.Item1[i][3],
+                        G4Kilo = result.Item2[i][3],
+                        Grape5 = result.Item1[i][4],
+                        G5Kilo = result.Item2[i][4],
+                        Grape6 = result.Item1[i][5],
+                        G6Kilo = result.Item2[i][5],
+                         SO2 = result.Item3[i]
+                    };
+
+                    // Oluşturulan Receipe nesnesini veritabanına ekleyin
+                    _appDbContext.Receipe.Add(receipe);
+                }
+
+                // Değişiklikleri kaydet
+                _appDbContext.SaveChanges();
+            }
+            // View'e yönlendir
+            return View("Uretim");
         }
 
         [AllowAnonymous]

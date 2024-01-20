@@ -1,11 +1,45 @@
 ﻿@model List<RawMaterial>
- 
+ <style>
+    body {
+        background-color: #802539;
+         
+    }
+
+    .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #fadadd; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Butonları sola hizala */
+        justify-content: center;
+        width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
+        padding: 20px;
+    }
+ </style>
 <h2>Raw Materials</h2>
 
-<table class="table">
+<table class="table" style="color:#FADADD">
     <thead>
         <tr>
-            <th>Hid</th>
+            
             <th>Name</th>
             <th>Type</th>
             <th>Alcohol</th>
@@ -14,14 +48,14 @@
             <th>Body</th>
             <th>Tannin</th>
             <th>Quality</th>
-            <th>Stock</th>
+            <th>Stock(TON)</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var grape in Model)
         {
             <tr>
-                <td>@grape.Hid</td>
+                
                 <td>@grape.Hname</td>
                 <td>@(grape.Type ? "White" : "Red")</td>
                 <td>@grape.Alcohol</td>
@@ -31,16 +65,17 @@
                 <td>@grape.Tannin</td>
                 <td>@grape.Quality</td>
                 <td>
-                    <span id="stock-@grape.Hid">@grape.Stock</span> kg
-                    <button onclick="updateStock('@grape.Hid', 100)">Add 100 kg</button>
-                </td>
+                    <span id="stock-@grape.Hid">@grape.Stock</span> ton
+                    <button onclick="updateStock('@grape.Hid', 1)">Add 1 Ton</button>
+                 </td>
             </tr>
         }
     </tbody>
 </table>
+   
 <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
     <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
-        <img src="~/css/uretim.png" alt="mainMenuButton">
+        <img src="~/css/buton.png" alt="mainMenuButton">
         Back
     </button>
 </form>
@@ -58,6 +93,6 @@
                 console.error("Stock update failed:", error);
             }
         });
-    }
+    } 
 </script>
 

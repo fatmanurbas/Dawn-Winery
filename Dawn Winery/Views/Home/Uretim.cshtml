@@ -1,17 +1,61 @@
 ﻿@model List<Receipe>
+<style>
+    body {
+        background-color: #802539;
+        
+    }
 
-<button onclick="showReceipes()">Şarap Üret</button>
+    .custom-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 300px;
+        width: 150px;
+        height: 100px;
+        background-color: #fadadd; /* Butonun arka plan rengi */
+        color: #8e5b68; /* Buton metni rengi */
+        border: none;
+        border-radius: 5px; /* İsteğe bağlı: Butonun kenarlarını yuvarlama */
+        cursor: pointer;
+    }
+
+        .custom-button img {
+            max-width: 85%; /* Görselin butona göre maksimum genişlikte olması */
+            max-height: 85%; /* Görselin butona göre maksimum yükseklikte olması */
+            /*margin-right: 5px; /* İsteğe bağlı: Görsel ile metin arasında bir boşluk bırakma */
+        }
+
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Butonları sola hizala */
+        justify-content: center;
+        width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
+        padding: 20px;
+    }
+</style>
+
+<button class="custom-button" onclick="showReceipes()" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+    <img src="~/css/buton.png" alt="mainMenuButton">
+    Make Wine
+</button>
+
+<button class="custom-button" onclick="createReceipe()" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+    <img src="~/css/buton.png" alt="mainMenuButton">
+    Create Receipe
+</button>
+
 
 <!-- Receipe Tablosu -->
-<div id="receipeTable" style="display:none;">
-    <h2>Receipe Listesi</h2>
+<div id="receipeTable" style="display:none; color:#FADADD">
+    <h2>Existing Receipes</h2>
+
     <table>
         <thead>
             <tr>
-                <th>Receipe ID</th>
                 <th>Receipe Name</th>
-                <!-- Diğer receipe özellikleri -->
-                <th>Üzümleri Kullan</th>
+                <th>Button</th>
+ 
             </tr>
         </thead>
         <tbody>
@@ -19,11 +63,9 @@
             @foreach (var grape in Model)
         {
             <tr>
-                    <td>@grape.Rname</td>
-                    <td>@(grape.Type ? "White" : "Red")</td>
-
+                    <td>@grape.Rname</td>s
                 <td>
-                        <button onclick="produceWine('@grape.Rname', 10)">Üzümleri Kullan</button>
+                        <button onclick="produceWine('@grape.Rname', 10)" style="color:#8e5b68;  background-color: #fadadd; border-radius: 5px;">Make This Wine</button>
                 </td>
             </tr>
         }
@@ -33,10 +75,11 @@
  
 <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
     <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
-        <img src="~/css/uretim.png" alt="mainMenuButton">
+        <img src="~/css/buton.png" alt="mainMenuButton">
         Back
     </button>
 </form>
+<img id="stock" src="~/css/uret.png" alt="winecat" style="position:fixed; top: 70px; right: 200px; width:379px;">
 <script>
     function showReceipes() {
         // Şarap üret butonuna tıklandığında Receipe tablosunu göster
@@ -54,9 +97,34 @@
                     location.reload();
                 },
                 error: function (error) {
-                alert("Üzümleri kullanma işlemi tamamlandı. Şarap üretildi!");
+                alert("Mevcut Stoklarla Üretim Sağlanamadı.");
                 }
             });
               
+    }
+
+    function createReceipe() {
+        // Kullanıcıdan girişleri almak için bir modal pencere gösterin
+        // Bu örnekte, basit bir JavaScript prompt kullanılmıştır.
+        var receipeName = prompt("Enter Receipe Name:");
+
+        if (receipeName) {
+            // Kullanıcının bir isim girdiğinden emin olun
+            $.ajax({
+                type: "POST",
+                url: "/Home/GenerateRecipes",
+                data: { wineName: receipeName },
+                success: function (result) {
+                    // İşlem başarıyla gerçekleştikten sonra sayfayı yenileme veya başka bir işlem yapma
+                    location.reload();
+                },
+                error: function (error) {
+                    alert("Receipe oluşturulurken bir hata oluştu.");
+                }
+            });
+        } else {
+            // Kullanıcı bir isim girmeden iptal ettiyse uyarı verin veya başka bir işlem yapın
+            alert("Receipe Name cannot be empty.");
+        }
     }
 </script>

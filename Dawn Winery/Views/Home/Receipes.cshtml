@@ -1,6 +1,10 @@
 ﻿@model List<Receipe>
 
     <style>
+         body {
+        background-color: #802539;
+         
+        }
          .custom-button {
         display: flex;
         align-items: center;
@@ -40,7 +44,7 @@
 </div>
 
 <!-- Tablo -->
-<table class="table">
+<table class="table" style="color:#FADADD">
     <thead>
         <tr>
             <th></th>
@@ -62,7 +66,7 @@
 </table>
 <form action="@Url.Action("Menu", "Home")" method="get" style="width:150px;">
     <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
-        <img src="~/css/uretim.png" alt="mainMenuButton">
+        <img src="~/css/buton.png" alt="mainMenuButton">
         Back
     </button>
 </form>
