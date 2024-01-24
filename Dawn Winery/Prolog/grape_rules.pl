@@ -94,11 +94,6 @@ Q is round((10 * TempSumQ) / 152).
 
 													
 
-% Özel yuvarlama fonksiyonu
-custom_round(Value, DecimalPlaces, RoundedValue) :-
-    Multiplier is 10 ** DecimalPlaces,
-    TempValue is Value * Multiplier,
-    RoundedValue is floor(TempValue + 0.5) / Multiplier.
 
 aging(Grapes, Tons, Year) :-
     aging_helper(Grapes, Tons, SumTannin),
@@ -147,22 +142,17 @@ distribute_remaining(0, _, _, [], []).
 
 distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest], Recipes_N, Recipes_T) :-
 
-    Add_Ton is Ton - RemainingTon,
-    (Add_Ton > 0 ->
+    Add_Ton is RemainingTon - Ton,
+    (Add_Ton > 0.0 ->
+        distribute_remaining(Add_Ton, GrapenameRest, TonRest,Result_N, Result_P),
+        Recipes_N = [Grapename|Result_N],
+        Recipes_T = [Ton|Result_P]
+    ; 
+
         Recipes_N = [Grapename],
-        custom_round(RemainingTon, 2, RoundedValue),
-        Recipes_T = [RoundedValue]
-    ; Add_Ton =:= 0 ->
-        Recipes_N = [Grapename],
-        Recipes_T = [Ton]
+        Recipes_T = [RemainingTon]
     ).
 
-
-distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest],Recipes_N, Recipes_T):-
-    Remaining is RemainingTon - Ton,
-    distribute_remaining(Remaining, GrapenameRest, TonRest,Result_N, Result_P),
-    Recipes_N = [Grapename|Result_N],
-    Recipes_T = [Ton|Result_P].
 
 													
 

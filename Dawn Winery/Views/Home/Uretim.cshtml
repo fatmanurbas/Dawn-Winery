@@ -167,11 +167,11 @@
         </button>
         <button onclick="selectWineType('White')" style="background-color: #f9e8c0;">WHITE WINE</button>
         <p>What Kind of Recipe Are You Looking For:</p>
-        <button onclick="selectRecipeKind('Best')" style="background-color: #722f37;">
+        <button onclick="selectRecipeKind('Best')" style="background-color: #fff;  color:red">
             The Best Recipe
         </button>
-        <button onclick="selectRecipeKind('Opt')" style="background-color: #f9e8c0;">The Optimal Recipe</button>
-        <button onclick="openRecipeModal()" style="background-color: #4285f4;">Open Recipe</button>
+        <button onclick="selectRecipeKind('Opt')" style="background-color: #fff; color:red">The Optimal Recipe</button>
+        <button onclick="openRecipeModal()" style="background-color: #000; color: #fff">Open Recipe</button>
     </div>
     </div>
 
@@ -331,7 +331,7 @@
             } else{
                 $.ajax({
                     type: "POST",
-                    url: "/Home/GenerateRecipesBest",
+                    url: "/Home/GenerateBestRecipe",
                     data: { wineName: wineName, color: color },
                     success: function (result) {
                         $.ajax({

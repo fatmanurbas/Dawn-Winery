@@ -210,46 +210,27 @@ namespace Dawn_Winery.Controllers
                 var result = prologInstance.aging(a, b);
                 colorp = prologInstance.color_predict(a, b);
                 //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
-                Receipe newReceipe = new Receipe
-                {
+                _appDbContext.Receipe.AddRange(new List<Receipe>()
+                    { new Receipe()
+                    {
                     Type = false,
                     SO2 = 150,
                     Rname = wineName,
                     Grape1 = a[0],
                     G1Kilo = b[0],
+                    Grape2 = a.Length > 1 ? a[1] : null,  // a[1] null değilse, a[1]; null ise null
+                    G2Kilo = b.Length > 1 ? b[1] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape3 = a.Length > 2 ? a[2] : null,  // a[1] null değilse, a[1]; null ise null
+                    G3Kilo = b.Length > 2 ? b[2] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape4 = a.Length > 3 ? a[3] : null,  // a[1] null değilse, a[1]; null ise null
+                    G4Kilo = b.Length > 3 ? b[3] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape5 = a.Length > 4 ? a[4] : null,  // a[1] null değilse, a[1]; null ise null
+                    G5Kilo = b.Length > 4 ? b[4] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape6 = a.Length > 5 ? a[5] : null,  // a[1] null değilse, a[1]; null ise null
+                    G6Kilo = b.Length > 5 ? b[5] : null,  // b[1] null değilse, b[1]; null ise null
                     Color = colorp
-                };
-
-                List<Receipe> receipes = new List<Receipe>();
-                for (int i = 1; i < Math.Min(a.Length, 6); i++)
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            newReceipe.Grape2 = a[i];
-                            newReceipe.G2Kilo = b[i];
-                            break;
-                        case 2:
-                            newReceipe.Grape3 = a[i];
-                            newReceipe.G3Kilo = b[i];
-                            break;
-                        case 3:
-                            newReceipe.Grape4 = a[i];
-                            newReceipe.G4Kilo = b[i];
-                            break;
-                        case 4:
-                            newReceipe.Grape5 = a[i];
-                            newReceipe.G5Kilo = b[i];
-                            break;
-                        case 5:
-                            newReceipe.Grape6 = a[i];
-                            newReceipe.G6Kilo = b[i];
-                            break;                      
                     }
-
-                    receipes.Add(newReceipe);
-                }
-                _appDbContext.Receipe.AddRange(receipes);
+                    });
 
                 _appDbContext.EndProduct.AddRange(new List<EndProduct>()
                     { new EndProduct()
@@ -298,46 +279,28 @@ namespace Dawn_Winery.Controllers
 
                 //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
 
-                Receipe newReceipe = new Receipe
-                {
-                    Type = false,
-                    SO2 = 150,
+                _appDbContext.Receipe.AddRange(new List<Receipe>()
+                    { new Receipe()
+                    {
+                    Type = true,
+                    SO2 = 100,
                     Rname = wineName,
                     Grape1 = a[0],
                     G1Kilo = b[0],
+                    Grape2 = a.Length > 1 ? a[1] : null,  // a[1] null değilse, a[1]; null ise null
+                    G2Kilo = b.Length > 1 ? b[1] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape3 = a.Length > 2 ? a[2] : null,  // a[1] null değilse, a[1]; null ise null
+                    G3Kilo = b.Length > 2 ? b[2] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape4 = a.Length > 3 ? a[3] : null,  // a[1] null değilse, a[1]; null ise null
+                    G4Kilo = b.Length > 3 ? b[3] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape5 = a.Length > 4 ? a[4] : null,  // a[1] null değilse, a[1]; null ise null
+                    G5Kilo = b.Length > 4 ? b[4] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape6 = a.Length > 5 ? a[5] : null,  // a[1] null değilse, a[1]; null ise null
+                    G6Kilo = b.Length > 5 ? b[5] : null,  // b[1] null değilse, b[1]; null ise null
                     Color = colorp
-                };
-
-                List<Receipe> receipes = new List<Receipe>();
-                for (int i = 1; i < Math.Min(a.Length, 6); i++)
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            newReceipe.Grape2 = a[i];
-                            newReceipe.G2Kilo = b[i];
-                            break;
-                        case 2:
-                            newReceipe.Grape3 = a[i];
-                            newReceipe.G3Kilo = b[i];
-                            break;
-                        case 3:
-                            newReceipe.Grape4 = a[i];
-                            newReceipe.G4Kilo = b[i];
-                            break;
-                        case 4:
-                            newReceipe.Grape5 = a[i];
-                            newReceipe.G5Kilo = b[i];
-                            break;
-                        case 5:
-                            newReceipe.Grape6 = a[i];
-                            newReceipe.G6Kilo = b[i];
-                            break;
                     }
+                    });
 
-                    receipes.Add(newReceipe);
-                }
-                _appDbContext.Receipe.AddRange(receipes);
                 _appDbContext.EndProduct.AddRange(new List<EndProduct>()
                     { new EndProduct()
                     {
@@ -363,7 +326,7 @@ namespace Dawn_Winery.Controllers
 
 
         [HttpPost]
-        public ActionResult GenerateRecipesBest(string wineName, string color)
+        public ActionResult GenerateBestRecipe(string wineName, string color)
         {
             int colorp;
             string names = "";
@@ -398,47 +361,29 @@ namespace Dawn_Winery.Controllers
                 var result = prologInstance.aging(a, b);
                 colorp = prologInstance.color_predict(a, b);
                 //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
-
-                Receipe newReceipe = new Receipe
-                {
+                _appDbContext.Receipe.AddRange(new List<Receipe>()
+                    { new Receipe()
+                    {
                     Type = false,
                     SO2 = 150,
                     Rname = wineName,
                     Grape1 = a[0],
                     G1Kilo = b[0],
+                    Grape2 = a.Length > 1 ? a[1] : null,  // a[1] null değilse, a[1]; null ise null
+                    G2Kilo = b.Length > 1 ? b[1] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape3 = a.Length > 2 ? a[2] : null,  // a[1] null değilse, a[1]; null ise null
+                    G3Kilo = b.Length > 2 ? b[2] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape4 = a.Length > 3 ? a[3] : null,  // a[1] null değilse, a[1]; null ise null
+                    G4Kilo = b.Length > 3 ? b[3] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape5 = a.Length > 4 ? a[4] : null,  // a[1] null değilse, a[1]; null ise null
+                    G5Kilo = b.Length > 4 ? b[4] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape6 = a.Length > 5 ? a[5] : null,  // a[1] null değilse, a[1]; null ise null
+                    G6Kilo = b.Length > 5 ? b[5] : null,  // b[1] null değilse, b[1]; null ise null
                     Color = colorp
-                };
-
-                List<Receipe> receipes = new List<Receipe>();
-                for (int i = 1; i < Math.Min(a.Length, 6); i++)
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            newReceipe.Grape2 = a[i];
-                            newReceipe.G2Kilo = b[i];
-                            break;
-                        case 2:
-                            newReceipe.Grape3 = a[i];
-                            newReceipe.G3Kilo = b[i];
-                            break;
-                        case 3:
-                            newReceipe.Grape4 = a[i];
-                            newReceipe.G4Kilo = b[i];
-                            break;
-                        case 4:
-                            newReceipe.Grape5 = a[i];
-                            newReceipe.G5Kilo = b[i];
-                            break;
-                        case 5:
-                            newReceipe.Grape6 = a[i];
-                            newReceipe.G6Kilo = b[i];
-                            break;
                     }
+                    });            
 
-                    receipes.Add(newReceipe);
-                }
-                _appDbContext.Receipe.AddRange(receipes);
+                _appDbContext.SaveChanges();
                 _appDbContext.EndProduct.AddRange(new List<EndProduct>()
                     { new EndProduct()
                     {
@@ -477,55 +422,39 @@ namespace Dawn_Winery.Controllers
                 float[] b;
                 int c;
                 int d;
-                var res = prologInstance.make_recipe(names, ton);
+                var res = prologInstance.make_recipe_best(names, ton);
                 a = res.Item1;
                 b = res.Item2;
                 c = res.Item3;
                 d = res.Item4;
                 var result = prologInstance.aging(a, b);
                 colorp = prologInstance.color_predict(a, b);
+
                 //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
 
-                Receipe newReceipe = new Receipe
-                {
-                    Type = false,
-                    SO2 = 150,
+                _appDbContext.Receipe.AddRange(new List<Receipe>()
+                    { new Receipe()
+                    {
+                    Type = true,
+                    SO2 = 100,
                     Rname = wineName,
                     Grape1 = a[0],
                     G1Kilo = b[0],
+                    Grape2 = a.Length > 1 ? a[1] : null,  // a[1] null değilse, a[1]; null ise null
+                    G2Kilo = b.Length > 1 ? b[1] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape3 = a.Length > 2 ? a[2] : null,  // a[1] null değilse, a[1]; null ise null
+                    G3Kilo = b.Length > 2 ? b[2] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape4 = a.Length > 3 ? a[3] : null,  // a[1] null değilse, a[1]; null ise null
+                    G4Kilo = b.Length > 3 ? b[3] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape5 = a.Length > 4 ? a[4] : null,  // a[1] null değilse, a[1]; null ise null
+                    G5Kilo = b.Length > 4 ? b[4] : null,  // b[1] null değilse, b[1]; null ise null
+                    Grape6 = a.Length > 5 ? a[5] : null,  // a[1] null değilse, a[1]; null ise null
+                    G6Kilo = b.Length > 5 ? b[5] : null,  // b[1] null değilse, b[1]; null ise null
                     Color = colorp
-                };
-
-                List<Receipe> receipes = new List<Receipe>();
-                for (int i = 1; i < Math.Min(a.Length, 6); i++)
-                {
-                    switch (i)
-                    {
-                        case 1:
-                            newReceipe.Grape2 = a[i];
-                            newReceipe.G2Kilo = b[i];
-                            break;
-                        case 2:
-                            newReceipe.Grape3 = a[i];
-                            newReceipe.G3Kilo = b[i];
-                            break;
-                        case 3:
-                            newReceipe.Grape4 = a[i];
-                            newReceipe.G4Kilo = b[i];
-                            break;
-                        case 4:
-                            newReceipe.Grape5 = a[i];
-                            newReceipe.G5Kilo = b[i];
-                            break;
-                        case 5:
-                            newReceipe.Grape6 = a[i];
-                            newReceipe.G6Kilo = b[i];
-                            break;
                     }
+                    });
 
-                    receipes.Add(newReceipe);
-                }
-                _appDbContext.Receipe.AddRange(receipes);
+                _appDbContext.SaveChanges();
                 _appDbContext.EndProduct.AddRange(new List<EndProduct>()
                     { new EndProduct()
                     {
@@ -539,14 +468,13 @@ namespace Dawn_Winery.Controllers
                         Stock = d
                     }
                     });
-
                 _appDbContext.SaveChanges();
             }
 
             TempData["MyNumber"] = colorp;
 
             // View'e yönlendir
-            return RedirectToAction("Uretim");
+            return RedirectToAction("Uretim", new { parameterName = colorp });
         }
 
         [HttpPost]
