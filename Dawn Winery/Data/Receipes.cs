@@ -19,6 +19,7 @@ namespace Dawn_Winery.Data
         public float? G6Kilo { get; set; }
         public int SO2 { get; set; }
         public string? Rname { get; set; }
+        public int Color { get; set; }
 
     }
 }

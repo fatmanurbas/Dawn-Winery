@@ -1,4 +1,8 @@
-﻿@model List<Receipe>
+﻿@{
+    ViewData["Title"] = "Production";
+}
+
+@model List<Receipe>
 <style>
     body {
         background-color: #802539;
@@ -6,6 +10,7 @@
     }
 
     .custom-button {
+        margin-top: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -26,6 +31,7 @@
         }
 
     .button-container {
+        margin-top: 140px;
         display: flex;
         flex-direction: column;
         align-items: flex-start; /* Butonları sola hizala */
@@ -33,17 +39,97 @@
         width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
         padding: 20px;
     }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+        padding-top: 60px;
+    }
+
+    .modal2 {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 50px;
+        top: 50px;
+        right: 50px;
+        bottom: 50px;
+        overflow: hidden;
+        background-color: #81b7a9;
+        padding-top: 60px;
+    }
+    .close2 {
+        color: #000;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+        .close2:hover,
+        .close2:focus {
+            color: #000;
+            text-decoration: none;
+        }
+
+    .modal-succ {
+        background-color: #81b7a9;
+        margin: 5% auto;
+        padding: 20px;
+        text-align: center;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .modal-content {
+        background-color: #81b7a9;
+        margin: 5% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close {
+        color: #8e5b68;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+
+
 </style>
 
-<button class="custom-button" onclick="showReceipes()" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+<button class="custom-button" onclick="showReceipes()" style="flex-direction: column; margin-left: 40px;  margin-top: 140px">
     <img src="~/css/buton.png" alt="mainMenuButton">
     Make Wine
 </button>
 
-<button class="custom-button" onclick="createReceipe()" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
+<button class="custom-button" onclick="colorOption()" style="flex-direction: column; margin-left: 40px; margin-top: 10px">
     <img src="~/css/buton.png" alt="mainMenuButton">
     Create Receipe
 </button>
+
+<!-- Modal -->
 
 
 <!-- Receipe Tablosu -->
@@ -55,32 +141,85 @@
             <tr>
                 <th>Receipe Name</th>
                 <th>Button</th>
- 
             </tr>
         </thead>
         <tbody>
             <!-- Receipe verileri burada foreach veya başka bir döngü ile doldurulacak -->
-            @foreach (var grape in Model)
-        {
-            <tr>
-                    <td>@grape.Rname</td>s
-                <td>
-                        <button onclick="produceWine('@grape.Rname', 10)" style="color:#8e5b68;  background-color: #fadadd; border-radius: 5px;">Make This Wine</button>
-                </td>
-            </tr>
-        }
+            @foreach (var receipe in Model)
+            {
+                <tr>
+                    <td>@receipe.Rname</td>
+                    <td>
+                        <button onclick="produceWine('@receipe.Rname', 10)" style="color:#8e5b68;  background-color: #fadadd; border-radius: 5px;">Make This Wine</button>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
- 
-<form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
+
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p>Enter the desired wine type:</p>
+        <button onclick="selectWineType('Red')" style="background-color: #722f37;">
+            RED WINE
+        </button>
+        <button onclick="selectWineType('White')" style="background-color: #f9e8c0;">WHITE WINE</button>
+        <p>What Kind of Recipe Are You Looking For:</p>
+        <button onclick="selectRecipeKind('Best')" style="background-color: #722f37;">
+            The Best Recipe
+        </button>
+        <button onclick="selectRecipeKind('Opt')" style="background-color: #f9e8c0;">The Optimal Recipe</button>
+        <button onclick="openRecipeModal()" style="background-color: #4285f4;">Open Recipe</button>
+    </div>
+    </div>
+
+  <form action="@Url.Action("Stocks", "Home")" method="get" style="width:150px;">
     <button class="custom-button" style="flex-direction: column; margin-left: 40px;  margin-top: 10px">
         <img src="~/css/buton.png" alt="mainMenuButton">
         Back
     </button>
 </form>
 <img id="stock" src="~/css/uret.png" alt="winecat" style="position:fixed; top: 70px; right: 200px; width:379px;">
+
+
+<div id="success" class="modal2">
+    <div class="modal-success">
+        <span class="close2" onclick="closeModal2()">&times;</span>
+        <div id="colorRectangle" style="position: absolute; right: 30px;  width: 250px; height: 250px; margin: 20px; text-align: center; color:#FADADD">Color of The Recipe</div>
+        <img src="~/css/cat.png" alt="Success Image" style="width: 300px; height: auto; position: absolute; top: 22%; left: 30%;">
+        <h3 style="color:#FADADD; position:absolute; left: 30%;">Receipe Created Successfully!</h3>
+        <p id="colorValue"></p>
+        
+    </div>
+</div>
+ 
 <script>
+
+    var selectedWineType;
+    var selectedRecipeKind;
+
+    function selectWineType(type) {
+        selectedWineType = type;
+    }
+
+    function selectRecipeKind(kind) {
+        selectedRecipeKind = kind;
+    }
+
+    function openRecipeModal() {
+        if (selectedWineType && selectedRecipeKind) {
+            closeModal('myModal');
+            // Burada createRecipe fonksiyonunu çağırabilir ve selectedWineType ile selectedRecipeKind'ı kullanarak işlemleri gerçekleştirebilirsiniz.
+             createReceipe(selectedWineType, selectedRecipeKind);
+            selectedWineType = null;
+            selectedRecipeKind = null; // Seçimleri sıfırla
+        } else {
+            // Kullanıcıya uygun bir hata mesajı verebilirsiniz.
+            console.error('Please select wine type and recipe kind.');
+        }
+    }
     function showReceipes() {
         // Şarap üret butonuna tıklandığında Receipe tablosunu göster
         document.getElementById("receipeTable").style.display = "block";
@@ -102,29 +241,186 @@
             });
               
     }
+    function colorOption(){
+        document.getElementById('myModal').style.display = 'block';
+    }
+    function closeModal() {
+        // Modalı kapat
+        document.getElementById('myModal').style.display = 'none';
 
-    function createReceipe() {
-        // Kullanıcıdan girişleri almak için bir modal pencere gösterin
-        // Bu örnekte, basit bir JavaScript prompt kullanılmıştır.
-        var receipeName = prompt("Enter Receipe Name:");
+    }
+    function createReceipe(color,Rtype) {
+        closeModal();
+        var wineName = prompt("Enter Receipe Name:");
 
-        if (receipeName) {
+        if (wineName) {
+            if(Rtype == "Opt"){
+
             // Kullanıcının bir isim girdiğinden emin olun
             $.ajax({
                 type: "POST",
                 url: "/Home/GenerateRecipes",
-                data: { wineName: receipeName },
+                data: { wineName: wineName, color: color},
                 success: function (result) {
-                    // İşlem başarıyla gerçekleştikten sonra sayfayı yenileme veya başka bir işlem yapma
-                    location.reload();
+                        $.ajax({
+                            type: "POST",
+                            url: "/Home/GetColor",
+                            data: { primaryKey: wineName },
+                            success: function (col) {
+                                var color = col.color;
+                                var type = col.type;
+
+                                // Color değerine göre dikdörtgenin arkaplan rengini belirle
+                                var backgroundColor;
+                                if(type == true){
+                                    switch (color) {
+                                        case 1:
+                                            backgroundColor = "#f4f4e9";
+                                            break;
+                                        case 2:
+                                            backgroundColor = "#f4f1be";
+                                            break;
+                                        case 3:
+                                            backgroundColor = "#f5edbe";
+                                            break;
+                                        case 4:
+                                            backgroundColor = "#f5e189";
+                                            break;
+                                        case 5:
+                                            backgroundColor = "#f5d557";
+                                            break;
+                                    } 
+                                } else{
+                                    switch (color) {
+                                        case 1:
+                                            backgroundColor = "#90335a";
+                                            break;
+                                        case 2:
+                                            backgroundColor = "#da92a8";
+                                            break;
+                                        case 3:
+                                            backgroundColor = "#7b3545";
+                                            break;
+                                        case 4:
+                                            backgroundColor = "#8a271b";
+                                            break;
+                                        case 5:
+                                            backgroundColor = "#540e12";
+                                            break;
+                                    } 
+                                }
+                                
+
+                                // Modal içindeki <div> elementine arkaplan rengini ata
+                                $("#colorRectangle").css('background-color', backgroundColor);
+
+                                // Modalı göster
+                                document.getElementById('success').style.display = 'block';
+
+                            },
+                            error: function (error) {
+                                alert("Receipe oluşturulurken bir hata oluştu.");
+                            }
+                        });
+                    
                 },
                 error: function (error) {
                     alert("Receipe oluşturulurken bir hata oluştu.");
                 }
             });
+            } else{
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/GenerateRecipesBest",
+                    data: { wineName: wineName, color: color },
+                    success: function (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Home/GetColor",
+                            data: { primaryKey: wineName },
+                            success: function (col) {
+                                var color = col.color;
+                                var type = col.type;
+
+                                // Color değerine göre dikdörtgenin arkaplan rengini belirle
+                                var backgroundColor;
+                                if (type == true) {
+                                    switch (color) {
+                                        case 1:
+                                            backgroundColor = "#f4f4e9";
+                                            break;
+                                        case 2:
+                                            backgroundColor = "#f4f1be";
+                                            break;
+                                        case 3:
+                                            backgroundColor = "#f5edbe";
+                                            break;
+                                        case 4:
+                                            backgroundColor = "#f5e189";
+                                            break;
+                                        case 5:
+                                            backgroundColor = "#f5d557";
+                                            break;
+                                    }
+                                } else {
+                                    switch (color) {
+                                        case 1:
+                                            backgroundColor = "#90335a";
+                                            break;
+                                        case 2:
+                                            backgroundColor = "#da92a8";
+                                            break;
+                                        case 3:
+                                            backgroundColor = "#7b3545";
+                                            break;
+                                        case 4:
+                                            backgroundColor = "#8a271b";
+                                            break;
+                                        case 5:
+                                            backgroundColor = "#540e12";
+                                            break;
+                                    }
+                                }
+
+
+                                // Modal içindeki <div> elementine arkaplan rengini ata
+                                $("#colorRectangle").css('background-color', backgroundColor);
+
+                                // Modalı göster
+                                document.getElementById('success').style.display = 'block';
+
+                            },
+                            error: function (error) {
+                                alert("Receipe oluşturulurken bir hata oluştu.");
+                            }
+                        });
+
+                    },
+                    error: function (error) {
+                        alert("Receipe oluşturulurken bir hata oluştu.");
+                    }
+                });
+            }
+
         } else {
             // Kullanıcı bir isim girmeden iptal ettiyse uyarı verin veya başka bir işlem yapın
             alert("Receipe Name cannot be empty.");
         }
     }
+     function showModal() {
+        // Modalı göster
+        document.getElementById('success').style.display = 'block';
+    }
+    function closeModal2() {
+        // Modalı kapat
+        document.getElementById('success').style.display = 'none';
+        // Sayfayı yenile (isteğe bağlı)
+        location.reload();
+    }
+    window.onclick = function (event) {
+        var modal = document.getElementById('myModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    };
 </script>

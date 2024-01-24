@@ -3,22 +3,25 @@ using Dawn_Winery.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 
 namespace Dawn_Winery.Controllers
 {
     public class HomeController : Controller
     {
-
+        private readonly ILogger<HomeController> _logger;
+         
         private readonly AppDbContext _appDbContext;
         private readonly Prolog.Prolog _prolog;
 
-        public HomeController( AppDbContext context)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
             _appDbContext = context;
             _prolog = new Prolog.Prolog();
-
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -28,8 +31,38 @@ namespace Dawn_Winery.Controllers
 
         public IActionResult Privacy()
         {
+            string[] hids = _appDbContext.RawMaterial.OrderByDescending(rm => rm.Quality).Select(rm => rm.Hid).ToArray();
+
+            string[] stocks = _appDbContext.RawMaterial.OrderBy(rm => rm.Quality).Select(rm => rm.Stock.ToString("0.0", CultureInfo.InvariantCulture)).ToArray();
+            string names =  hids[0];
+            for (int i = 1; i < 5; i++)
+            {
+                names = names + ", " +  hids[i];
+            }
+
+            string ton =  stocks[0];
+            for (int i = 1; i < 5; i++)
+            {
+                ton = ton + ", " + stocks[i];
+            }
+
+             Prolog.Prolog prologInstance = new Prolog.Prolog();
+
+            string[] a;
+            float[] b;
+            int c;
+            int d;
+            var res = prologInstance.make_recipe("prosecco, gewurztraminer, malvasia, viognier, chardonnay, pinot_gris, semillon, chenin_blanc, vermentino, airen, cortese, garganega, riesling, macabeo, sauvignon_blanc, trebbiano, pinot_grigio, glera, moscato", "4.3, 5.0, 5.0, 6.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 6.0, 5.0, 5.0, 5.0, 5.0, 5.0, 6.0, 5.0, 0.6");
+            a = res.Item1;
+            b = res.Item2;
+            c = res.Item3;
+            d = res.Item4;
+         //   var result = prologInstance.color_predict(a[0] +","+ a[1], "0.2, 1.3");
+
+            ViewData["Message"] = "Prolog Sonucu: " + a[0] +"__"+ b[0] + "__"+ a[1] + "__" + b[1] + "__" + c + "__" + d + "__" ;
             return View();
-        }
+ 
+         }
         public IActionResult Menu()
         {
             return View();
@@ -142,68 +175,408 @@ namespace Dawn_Winery.Controllers
         }
 
         [HttpPost]
-        public ActionResult GenerateRecipes(string wineName)
+        public ActionResult GenerateRecipes(string wineName, string color)
         {
-            // Veritabanından üzüm bilgilerini çek
-            string[] hids = _appDbContext.RawMaterial.Select(rm => rm.Hid).ToArray();
-            string[] stocks = _appDbContext.RawMaterial.Select(rm => rm.Stock.ToString()).ToArray();
-            string names = string.Join(",", hids[0]);
-            for(int i = 1; i< 6; i++)
+            int colorp;
+            string names = "";
+            string ton = "";
+            if(color == "Red")
             {
-                 names = names + "," + string.Join(",", hids[i]);
-            }
-             
-            string[] stringNumbers = new string[6];
-            string ton = string.Join(",", stocks[0]);
-            for (int i = 1; i < 6; i++)
-            {
-                ton = ton + "," + string.Join(",", stocks[i]);
-             }
+                string[] hids = _appDbContext.RawMaterial.Where(rm => rm.Type == false && rm.Stock > 0).OrderByDescending(rm => rm.Quality).Select(rm => rm.Hid).ToArray();
 
-            // Diziyi virgülle ayırarak birleştir
- 
-            var result = _prolog.make_recipes(names, ton);
-
-             
-
-            if (result != null)
-            {
-                // Çözümü çöz ve Receipe nesnelerini oluştur
-                for (int i = 0; i < result.Item1.Length; i++)
+                string[] stocks = _appDbContext.RawMaterial.Where(rm => rm.Type == false && rm.Stock > 0).OrderBy(rm => rm.Quality).Select(rm => rm.Stock.ToString("0.0", CultureInfo.InvariantCulture)).ToArray();
+                 names = hids[0];
+                for (int i = 1; i < hids.Length; i++)
                 {
-                    var receipe = new Receipe
-                    {
-                        Rname = "AAA",
-                        Type = false,
-                        Grape1 = result.Item1[i][0],
-                        G1Kilo = result.Item2[i][0],
-                        Grape2 = result.Item1[i][1],
-                        G2Kilo = result.Item2[i][1],
-                        Grape3 = result.Item1[i][2],
-                        G3Kilo = result.Item2[i][2],
-                        Grape4 = result.Item1[i][3],
-                        G4Kilo = result.Item2[i][3],
-                        Grape5 = result.Item1[i][4],
-                        G5Kilo = result.Item2[i][4],
-                        Grape6 = result.Item1[i][5],
-                        G6Kilo = result.Item2[i][5],
-                         SO2 = result.Item3[i]
-                    };
-
-                    // Oluşturulan Receipe nesnesini veritabanına ekleyin
-                    _appDbContext.Receipe.Add(receipe);
+                    names = names + ", " + hids[i];
                 }
 
-                // Değişiklikleri kaydet
+                 ton = stocks[0];
+                for (int i = 1; i < stocks.Length; i++)
+                {
+                    ton = ton + ", " + stocks[i];
+                }
+                Prolog.Prolog prologInstance = new Prolog.Prolog();
+
+                string[] a;
+                float[] b;
+                int c;
+                int d;
+                var res = prologInstance.make_recipe(names, ton);
+                a = res.Item1;
+                b = res.Item2;
+                c = res.Item3;
+                d = res.Item4;
+                var result = prologInstance.aging(a, b);
+                colorp = prologInstance.color_predict(a, b);
+                //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
+                Receipe newReceipe = new Receipe
+                {
+                    Type = false,
+                    SO2 = 150,
+                    Rname = wineName,
+                    Grape1 = a[0],
+                    G1Kilo = b[0],
+                    Color = colorp
+                };
+
+                List<Receipe> receipes = new List<Receipe>();
+                for (int i = 1; i < Math.Min(a.Length, 6); i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            newReceipe.Grape2 = a[i];
+                            newReceipe.G2Kilo = b[i];
+                            break;
+                        case 2:
+                            newReceipe.Grape3 = a[i];
+                            newReceipe.G3Kilo = b[i];
+                            break;
+                        case 3:
+                            newReceipe.Grape4 = a[i];
+                            newReceipe.G4Kilo = b[i];
+                            break;
+                        case 4:
+                            newReceipe.Grape5 = a[i];
+                            newReceipe.G5Kilo = b[i];
+                            break;
+                        case 5:
+                            newReceipe.Grape6 = a[i];
+                            newReceipe.G6Kilo = b[i];
+                            break;                      
+                    }
+
+                    receipes.Add(newReceipe);
+                }
+                _appDbContext.Receipe.AddRange(receipes);
+
+                _appDbContext.EndProduct.AddRange(new List<EndProduct>()
+                    { new EndProduct()
+                    {
+                        Mname = wineName,
+                        Year = 2024,
+                        Aging = result,
+                        Quality = c,
+                        Type = false,
+                        Milil = 750,
+                        Bottle = 0,
+                        Stock = d
+                    }
+                    });
+
+                _appDbContext.SaveChanges();
+            } else
+            {
+                string[] hids = _appDbContext.RawMaterial.Where(rm => rm.Type == true && rm.Stock > 0).OrderByDescending(rm => rm.Quality).Select(rm => rm.Hid).ToArray();
+
+                string[] stocks = _appDbContext.RawMaterial.Where(rm => rm.Type == true && rm.Stock > 0).OrderBy(rm => rm.Quality).Select(rm => rm.Stock.ToString("0.0", CultureInfo.InvariantCulture)).ToArray();
+                names = hids[0];
+                for (int i = 1; i < hids.Length; i++)
+                {
+                    names = names + ", " + hids[i];
+                }
+
+                ton = stocks[0];
+                for (int i = 1; i < stocks.Length; i++)
+                {
+                    ton = ton + ", " + stocks[i];
+                }
+                Prolog.Prolog prologInstance = new Prolog.Prolog();
+
+                string[] a;
+                float[] b;
+                int c;
+                int d;
+                var res = prologInstance.make_recipe(names, ton);
+                a = res.Item1;
+                b = res.Item2;
+                c = res.Item3;
+                d = res.Item4;
+                var result = prologInstance.aging(a, b);
+                colorp = prologInstance.color_predict(a, b);
+
+                //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
+
+                Receipe newReceipe = new Receipe
+                {
+                    Type = false,
+                    SO2 = 150,
+                    Rname = wineName,
+                    Grape1 = a[0],
+                    G1Kilo = b[0],
+                    Color = colorp
+                };
+
+                List<Receipe> receipes = new List<Receipe>();
+                for (int i = 1; i < Math.Min(a.Length, 6); i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            newReceipe.Grape2 = a[i];
+                            newReceipe.G2Kilo = b[i];
+                            break;
+                        case 2:
+                            newReceipe.Grape3 = a[i];
+                            newReceipe.G3Kilo = b[i];
+                            break;
+                        case 3:
+                            newReceipe.Grape4 = a[i];
+                            newReceipe.G4Kilo = b[i];
+                            break;
+                        case 4:
+                            newReceipe.Grape5 = a[i];
+                            newReceipe.G5Kilo = b[i];
+                            break;
+                        case 5:
+                            newReceipe.Grape6 = a[i];
+                            newReceipe.G6Kilo = b[i];
+                            break;
+                    }
+
+                    receipes.Add(newReceipe);
+                }
+                _appDbContext.Receipe.AddRange(receipes);
+                _appDbContext.EndProduct.AddRange(new List<EndProduct>()
+                    { new EndProduct()
+                    {
+                        Mname = wineName,
+                        Year = 2024,
+                        Aging = result,
+                        Quality = c,
+                        Type = true,
+                        Milil = 750,
+                        Bottle = 0,
+                        Stock = d
+                    }
+                    });
+
                 _appDbContext.SaveChanges();
             }
+
+            TempData["MyNumber"] = colorp;
+
             // View'e yönlendir
-            return View("Uretim");
+            return RedirectToAction("Uretim", new { parameterName = colorp });
+            }
+
+
+        [HttpPost]
+        public ActionResult GenerateRecipesBest(string wineName, string color)
+        {
+            int colorp;
+            string names = "";
+            string ton = "";
+            if (color == "Red")
+            {
+                string[] hids = _appDbContext.RawMaterial.Where(rm => rm.Type == false && rm.Stock > 0).OrderByDescending(rm => rm.Quality).Select(rm => rm.Hid).ToArray();
+
+                string[] stocks = _appDbContext.RawMaterial.Where(rm => rm.Type == false && rm.Stock > 0).OrderBy(rm => rm.Quality).Select(rm => rm.Stock.ToString("0.0", CultureInfo.InvariantCulture)).ToArray();
+                names = hids[0];
+                for (int i = 1; i < hids.Length; i++)
+                {
+                    names = names + ", " + hids[i];
+                }
+
+                ton = stocks[0];
+                for (int i = 1; i < stocks.Length; i++)
+                {
+                    ton = ton + ", " + stocks[i];
+                }
+                Prolog.Prolog prologInstance = new Prolog.Prolog();
+
+                string[] a;
+                float[] b;
+                int c;
+                int d;
+                var res = prologInstance.make_recipe_best(names, ton);
+                a = res.Item1;
+                b = res.Item2;
+                c = res.Item3;
+                d = res.Item4;
+                var result = prologInstance.aging(a, b);
+                colorp = prologInstance.color_predict(a, b);
+                //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
+
+                Receipe newReceipe = new Receipe
+                {
+                    Type = false,
+                    SO2 = 150,
+                    Rname = wineName,
+                    Grape1 = a[0],
+                    G1Kilo = b[0],
+                    Color = colorp
+                };
+
+                List<Receipe> receipes = new List<Receipe>();
+                for (int i = 1; i < Math.Min(a.Length, 6); i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            newReceipe.Grape2 = a[i];
+                            newReceipe.G2Kilo = b[i];
+                            break;
+                        case 2:
+                            newReceipe.Grape3 = a[i];
+                            newReceipe.G3Kilo = b[i];
+                            break;
+                        case 3:
+                            newReceipe.Grape4 = a[i];
+                            newReceipe.G4Kilo = b[i];
+                            break;
+                        case 4:
+                            newReceipe.Grape5 = a[i];
+                            newReceipe.G5Kilo = b[i];
+                            break;
+                        case 5:
+                            newReceipe.Grape6 = a[i];
+                            newReceipe.G6Kilo = b[i];
+                            break;
+                    }
+
+                    receipes.Add(newReceipe);
+                }
+                _appDbContext.Receipe.AddRange(receipes);
+                _appDbContext.EndProduct.AddRange(new List<EndProduct>()
+                    { new EndProduct()
+                    {
+                        Mname = wineName,
+                        Year = 2024,
+                        Aging = result,
+                        Quality = c,
+                        Type = false,
+                        Milil = 750,
+                        Bottle = 0,
+                        Stock = d
+                    }
+                    });
+
+                _appDbContext.SaveChanges();
+            }
+            else
+            {
+                string[] hids = _appDbContext.RawMaterial.Where(rm => rm.Type == true && rm.Stock > 0).OrderByDescending(rm => rm.Quality).Select(rm => rm.Hid).ToArray();
+
+                string[] stocks = _appDbContext.RawMaterial.Where(rm => rm.Type == true && rm.Stock > 0).OrderBy(rm => rm.Quality).Select(rm => rm.Stock.ToString("0.0", CultureInfo.InvariantCulture)).ToArray();
+                names = hids[0];
+                for (int i = 1; i < hids.Length; i++)
+                {
+                    names = names + ", " + hids[i];
+                }
+
+                ton = stocks[0];
+                for (int i = 1; i < stocks.Length; i++)
+                {
+                    ton = ton + ", " + stocks[i];
+                }
+                Prolog.Prolog prologInstance = new Prolog.Prolog();
+
+                string[] a;
+                float[] b;
+                int c;
+                int d;
+                var res = prologInstance.make_recipe(names, ton);
+                a = res.Item1;
+                b = res.Item2;
+                c = res.Item3;
+                d = res.Item4;
+                var result = prologInstance.aging(a, b);
+                colorp = prologInstance.color_predict(a, b);
+                //  ViewData["Message"] = "Prolog Sonucu: " + a[0] + "__" + b[0] + "__" + a[1] + "__" + b[1] + "__" + c + "__" + d + "__" + result;
+
+                Receipe newReceipe = new Receipe
+                {
+                    Type = false,
+                    SO2 = 150,
+                    Rname = wineName,
+                    Grape1 = a[0],
+                    G1Kilo = b[0],
+                    Color = colorp
+                };
+
+                List<Receipe> receipes = new List<Receipe>();
+                for (int i = 1; i < Math.Min(a.Length, 6); i++)
+                {
+                    switch (i)
+                    {
+                        case 1:
+                            newReceipe.Grape2 = a[i];
+                            newReceipe.G2Kilo = b[i];
+                            break;
+                        case 2:
+                            newReceipe.Grape3 = a[i];
+                            newReceipe.G3Kilo = b[i];
+                            break;
+                        case 3:
+                            newReceipe.Grape4 = a[i];
+                            newReceipe.G4Kilo = b[i];
+                            break;
+                        case 4:
+                            newReceipe.Grape5 = a[i];
+                            newReceipe.G5Kilo = b[i];
+                            break;
+                        case 5:
+                            newReceipe.Grape6 = a[i];
+                            newReceipe.G6Kilo = b[i];
+                            break;
+                    }
+
+                    receipes.Add(newReceipe);
+                }
+                _appDbContext.Receipe.AddRange(receipes);
+                _appDbContext.EndProduct.AddRange(new List<EndProduct>()
+                    { new EndProduct()
+                    {
+                        Mname = wineName,
+                        Year = 2024,
+                        Aging = result,
+                        Quality = c,
+                        Type = true,
+                        Milil = 750,
+                        Bottle = 0,
+                        Stock = d
+                    }
+                    });
+
+                _appDbContext.SaveChanges();
+            }
+
+            TempData["MyNumber"] = colorp;
+
+            // View'e yönlendir
+            return RedirectToAction("Uretim");
         }
 
-        [AllowAnonymous]
-        public IActionResult Uretim()
+        [HttpPost]
+        public JsonResult GetColor(string primaryKey)
         {
+            
+                // Veritabanından color değerini çek
+                var item = _appDbContext.Receipe.FirstOrDefault(x => x.Rname == primaryKey);
+
+                if (item != null)
+                { 
+                    // Başarılı ise JSON formatında cevap gönder
+                    return Json(new { success = true, color = item.Color, type = item.Type });
+                }
+                else
+                {
+                    // Başarısız ise JSON formatında hata mesajı gönder
+                    return Json(new { success = false, message = "Veri bulunamadı" });
+                }
+            
+        }
+
+      
+        [AllowAnonymous]
+        public IActionResult Uretim(int parameterName)
+        {
+            int uretimVerisi = parameterName;
+
+            // ViewBag veya ViewData ile veriyi görünüme aktarın
+            ViewBag.UretimVerisi = uretimVerisi;
             var datau = _appDbContext.Receipe.ToList();
             return View(datau);
         }

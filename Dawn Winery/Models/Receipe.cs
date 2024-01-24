@@ -20,5 +20,6 @@ namespace Dawn_Winery.Models
         public string? Grape6 { get; set; }
         public float? G6Kilo { get; set; }
         public int SO2 { get; set; }
+        public int Color { get; set; }
     }
 }

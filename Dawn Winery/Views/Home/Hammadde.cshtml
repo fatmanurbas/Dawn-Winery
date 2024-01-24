@@ -1,4 +1,8 @@
-﻿@model List<RawMaterial>
+﻿@{
+    ViewData["Title"] = "Raw Materials";
+}
+
+@model List<RawMaterial>
  <style>
     body {
         background-color: #802539;
@@ -34,7 +38,7 @@
         padding: 20px;
     }
  </style>
-<h2>Raw Materials</h2>
+<h2 style ="color:#FADADD">Raw Materials</h2>
 
 <table class="table" style="color:#FADADD">
     <thead>
@@ -45,8 +49,6 @@
             <th>Alcohol</th>
             <th>Sweet</th>
             <th>Acidity</th>
-            <th>Body</th>
-            <th>Tannin</th>
             <th>Quality</th>
             <th>Stock(TON)</th>
         </tr>
@@ -61,8 +63,6 @@
                 <td>@grape.Alcohol</td>
                 <td>@grape.Sweet</td>
                 <td>@grape.Acidity</td>
-                <td>@grape.Body</td>
-                <td>@grape.Tannin</td>
                 <td>@grape.Quality</td>
                 <td>
                     <span id="stock-@grape.Hid">@grape.Stock</span> ton

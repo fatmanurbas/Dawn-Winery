@@ -1,4 +1,8 @@
-﻿@model List<Receipe>
+﻿@{
+    ViewData["Title"] = "Recipes";
+}
+
+@model List<Receipe>
 
     <style>
          body {
@@ -33,13 +37,22 @@
         width: 25%; /* Ekranın sağ tarafını kaplaması için genişlik */
         padding: 20px;
     }
+
+    .modal {
+       width: 85%;
+       left: 100px;
+        color: #802539;
+       position: absolute;
+        padding: 20px; /* Adjust padding as needed */
+    }
+
     </style>
 <!-- Modal -->
 <div id="recipeModal" class="modal">
-    <div class="modal-content">
-        <!-- Detayları göstermek için gerekli HTML kodunu buraya ekleyin -->
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div id="recipeDetails"></div>
+    <div class="modal-content" style="background-color: #802539">
+        <img src="~/css/scroll.png" alt="scroll" style="width:500px; left: 25%; position: relative; top:5px;">
+        <span class="close" onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; font-size: 24px;  color: #FADADD;">&times;</span>
+        <div id="recipeDetails" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: black;"></div>
     </div>
 </div>
 
@@ -85,26 +98,28 @@
             modalContent += `<p><strong>Type:</strong> Red</p>`;
         }
         modalContent += `<p><strong>SO2:</strong> ${so2} Ppm</p>`;
-        modalContent += `<p><strong>First Grape's Name:</strong> ${grape1} - ${g1Kilo} Kilo</p>`;
+        modalContent += `<p><strong>Grapes:</strong></p>`;
+
+        modalContent += `<p><strong></strong> ${grape1} - ${g1Kilo} Ton</p>`;
 
         if (grape2 && g2Kilo) {
-            modalContent += `<p><strong>Second Grape's Name:</strong> ${grape2} - ${g2Kilo} Kilo</p>`;
+            modalContent += `<p><strong></strong> ${grape2} - ${g2Kilo} Ton</p>`;
         }
 
         if (grape3 && g3Kilo) {
-            modalContent += `<p><strong>Third Grape's Name:</strong> ${grape3} - ${g3Kilo} Kilo</p>`;
+            modalContent += `<p><strong></strong> ${grape3} - ${g3Kilo} Ton</p>`;
         }
         // Dolu olan satırları kontrol et ve modal içine ekleyin
         if (grape4 && g4Kilo) {
-            modalContent += `<p><strong>Fourth Grape's Name:</strong> ${grape4} - ${g4Kilo} Kilo</p>`;
+            modalContent += `<p><strong></strong> ${grape4} - ${g4Kilo} Ton</p>`;
         }
 
         if (grape5 && g5Kilo) {
-            modalContent += `<p><strong>Fifth Grape's Name:</strong> ${grape5} - ${g5Kilo} Kilo</p>`;
+            modalContent += `<p><strong></strong> ${grape5} - ${g5Kilo} Ton</p>`;
         }
 
         if (grape6 && g6Kilo) {
-            modalContent += `<p><strong>Sixth Grape's Name:</strong> ${grape6} - ${g6Kilo} Kilo</p>`;
+            modalContent += `<p><strong></strong> ${grape6} - ${g6Kilo} Ton</p>`;
         }
 
         detailsContainer.innerHTML = modalContent;

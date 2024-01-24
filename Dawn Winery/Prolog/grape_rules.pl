@@ -100,63 +100,31 @@ custom_round(Value, DecimalPlaces, RoundedValue) :-
     TempValue is Value * Multiplier,
     RoundedValue is floor(TempValue + 0.5) / Multiplier.
 
+aging(Grapes, Tons, Year) :-
+    aging_helper(Grapes, Tons, SumTannin),
+    Tannin is round(SumTannin / 1.5),
+    (Tannin = 1 -> Year is 1; Year is Tannin * 5).
 
+aging_helper([], [], 0).
 
-distribute_remaining(_, [], [], UpdatedGrapenames, UpdatedTon, [], []).
-
-distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest], UpdatedGrapenames, UpdatedTon,
-    Recipes_N, Recipes_T) :-
-    Add_Ton is Ton - RemainingTon,
-    Add_Ton > 0,
-    UpdatedTon = [Add_Ton | TonRest],
-    UpdatedGrapenames = [Grapename | GrapenameRest],
-    Recipes_N = [Grapename],
-    Recipes_T = [RemainingTon].
-
-distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest], UpdatedGrapenames, UpdatedTon,
-    Recipes_N, Recipes_T) :-
-    Add_Ton is Ton - RemainingTon,
-    Add_Ton = 0,
-    UpdatedGrapenames = [GrapenameRest],
-    UpdatedTon = [TonRest], 
-    Recipes_N = [Grapename],
-    Recipes_T = [Ton].
-
-distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest], UpdatedGrapenames, UpdatedTon,
-    Recipes_N, Recipes_T):-
-    Remaining is RemainingTon - Ton,
-    distribute_remaining(Remaining, GrapenameRest, TonRest, UpdatedGrapenames, UpdatedTon,
-        Result_N, Result_P),
-    Recipes_N = [Grapename|Result_N],
-    Recipes_T = [Ton|Result_P].
+aging_helper([Grape | RestGrapes], [Ton | RestTon], SumTannin) :-
+    aging_helper(RestGrapes, RestTon, SubTannin),
+    grape(Grape, _, _, _, _, _, Tannin),
+    SumTannin is SubTannin + (Tannin * Ton).
 
 													
-make_recipes_helper([],[],[],[],[]).
 
-make_recipes_helper([Grapename|GrapenameRest], [Ton|TonRest], [Recipes_N|RestRecipes_N], [Recipes_T|RestRecipes_T], [Total|RestTotal]) :-
-    NewTon is min(Ton, 1.5),
-    RemainingTon is 1.5 - NewTon,
+color_predict(Grapes, Tons, Color) :-
+    color_predict_helper(Grapes, Tons, SumBody),
+    Color is round(SumBody / 1.5).
 
-    (RemainingTon =:= 0 ->
-        Total is round((Ton / 1.5) - 0.5),
-        Rest is (Ton - (Total * 1.5)),
-        Recipes_N = [Grapename],
-        Recipes_T = [1.5],
-        (Rest = 0 ->
-            UpdatedGrapenames = GrapenameRest,
-            UpdatedPercents = TonRest
-        ;
-            UpdatedGrapenames = [Grapename|GrapenameRest],
-            UpdatedPercents = [Rest|TonRest]
-        )
-    ;
-        distribute_remaining(RemainingTon, GrapenameRest, TonRest, UpdatedGrapenames, UpdatedPercents,
-                              Recipes_NT, Recipes_TT),
-        Recipes_N = [Grapename|Recipes_NT],
-        Recipes_T = [Ton|Recipes_TT],
-        Total = 1
-    ),
-    make_recipes_helper(UpdatedGrapenames, UpdatedPercents, RestRecipes_N, RestRecipes_T, RestTotal).
+color_predict_helper([], [], 0).
+
+color_predict_helper([Grape | RestGrapes], [Ton | RestTon], SumBody) :-
+    color_predict_helper(RestGrapes, RestTon, SubBody),
+    grape(Grape, _, _, _, _, Body, _),
+    SumBody is SubBody + (Body * Ton).
+
 
 													
 
@@ -172,33 +140,132 @@ calculate_quality([Grape|Rest_Grape], [Ton|Rest_Ton], RoundedQuality) :-
     Quality is Q * Ton / 1.5 + Rest_Quality,
     RoundedQuality is round(Quality).
 
-													
-
-calculate_quality_helper([],[],[]).
-
-calculate_quality_helper([Grapes|RestGrapes],[Percents|RestPercents],[Quality|RestQuality]):-
-    calculate_quality(Grapes,Percents,Quality),
-    calculate_quality_helper(RestGrapes,RestPercents,RestQuality).
 
 													
 
-make_recipes(Grapenames, Tons, RecipesN,RecipesT,Qualitys,Total) :-
+distribute_remaining(0, _, _, [], []).
 
-    make_recipes_helper(Grapenames, Tons, RecipesN,RecipesT,Total),
-    calculate_quality_helper(RecipesN,RecipesT,Qualitys).
+distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest], Recipes_N, Recipes_T) :-
 
-
-aging(Grapes, Tons, Year) :-
-    aging_helper(Grapes, Tons, SumTannin),
-    Tannin is round(SumTannin / 1.5),
-    (Tannin = 1 -> Year is 1; Year is Tannin * 5).
-
-aging_helper([], [], 0).
-
-aging_helper([Grape | RestGrapes], [Ton | RestTon], SumTannin) :-
-    aging_helper(RestGrapes, RestTon, SubTannin),
-    grape(Grape, _, _, _, _, _, Tannin),
-    SumTannin is SubTannin + (Tannin * Ton).
+    Add_Ton is Ton - RemainingTon,
+    (Add_Ton > 0 ->
+        Recipes_N = [Grapename],
+        custom_round(RemainingTon, 2, RoundedValue),
+        Recipes_T = [RoundedValue]
+    ; Add_Ton =:= 0 ->
+        Recipes_N = [Grapename],
+        Recipes_T = [Ton]
+    ).
 
 
- 
+distribute_remaining(RemainingTon, [Grapename|GrapenameRest], [Ton|TonRest],Recipes_N, Recipes_T):-
+    Remaining is RemainingTon - Ton,
+    distribute_remaining(Remaining, GrapenameRest, TonRest,Result_N, Result_P),
+    Recipes_N = [Grapename|Result_N],
+    Recipes_T = [Ton|Result_P].
+
+													
+
+make_recipe_best([Grapename|GrapenameRest], [Ton|TonRest], RecipesN,RecipesT,Quality,Total) :-
+
+    NewTon is min(Ton, 1.5),
+    RemainingTon is 1.5 - NewTon,
+
+    (RemainingTon =:= 0 ->
+        Total is round((Ton / 1.5) - 0.5),
+        RecipesN = [Grapename],
+        RecipesT = [1.5]
+    ;
+        distribute_remaining(RemainingTon, GrapenameRest, TonRest,Recipes_NT, Recipes_TT),
+        RecipesN = [Grapename|Recipes_NT],
+        RecipesT = [Ton|Recipes_TT],
+        Total = 1
+    ),
+
+    calculate_quality(RecipesN,RecipesT,Quality).
+
+
+													
+
+reverse_list([], []).
+reverse_list([Head|Tail], Reversed) :-
+    reverse_list(Tail, ReversedTail),
+    append(ReversedTail, [Head], Reversed).
+
+
+													
+													
+
+
+last_element([X], X).
+
+last_element([_|Rest], Last) :-
+    last_element(Rest, Last).
+
+remove_last([_], []).
+
+remove_last([Head|Tail], [Head|YeniListe]) :-
+    remove_last(Tail, YeniListe).
+													
+
+make_recipe([Grapename|GrapenameRest], [TonB|TonRest], RecipesN, RecipesT, Quality, Total) :-
+
+    NewTonW is min(TonB, 0.75),
+    RemainingTonWorst is 0.75 - NewTonW,
+
+    ( RemainingTonWorst =:= 0 ->
+        TotalW is round((TonB / 0.75) - 0.5),
+        RecipesNW = [Grapename],
+        RecipesTW = [0.75]
+    ;
+    TotalW = 1,
+    distribute_remaining(RemainingTonWorst, GrapenameRest, TonRest, Recipes_WN, Recipes_WT),
+    RecipesNW = [Grapename| Recipes_WN],
+    RecipesTW = [TonB| Recipes_WT]
+    ),
+
+
+    reverse_list(GrapenameRest, [GrapenameR|RestRGrapenames]),
+    reverse_list(TonRest, [TonR|RestRTons]),
+    NewTonB is min(TonR, 0.75),
+
+    RemainingTonBest is 0.75 - NewTonB,
+
+    ( RemainingTonBest =:= 0 ->
+        TotalB is round((TonR / 0.75) - 0.5),
+        Total is min(TotalW, TotalB),
+        RecipesNB = [GrapenameR],
+        RecipesTB = [0.75]
+    ;
+    Total = 1,
+    distribute_remaining(RemainingTonBest, RestRGrapenames, RestRTons, Recipes_BN, Recipes_BT),
+    RecipesNB = [GrapenameR| Recipes_BN],
+    RecipesTB = [TonR| Recipes_BT]
+    ),
+
+    last_element(RecipesNW, RWLast),
+    last_element(RecipesNB, RBLast),
+
+    ( RWLast = RBLast ->
+
+        remove_last(RecipesNW, NewListNW),
+        remove_last(RecipesNB, NewListNB),
+
+        last_element(RecipesTB, TLast),
+        last_element(RecipesTW, Last),
+        NewT is TLast + Last,
+
+        remove_last(RecipesTW, NewListTW),
+        remove_last(RecipesTB, NewListTB),
+
+    append(NewListNW, NewListNB, RecipesNtemp),
+
+    append(NewListTW, NewListTB, RecipesTtemp),
+    RecipesN = [RWLast|RecipesNtemp],
+    RecipesT = [NewT|RecipesTtemp]
+;
+        append(RecipesNW, RecipesNB, RecipesN),
+        append(RecipesTW, RecipesTB, RecipesT)
+),
+    calculate_quality(RecipesN, RecipesT, Quality).
+

@@ -104,9 +104,190 @@ namespace Dawn_Winery.Prolog
         //remove_grape(Name)
 
 
-        public int aging(string Names, string Tons)
+       
+        //aging(Grapes, Tons, Year)
+
+        public Tuple<string[], float[], int, int> make_recipe_best(string Grapenames, string Tons)
+        {
+
+            string query = $"make_recipe_best([{Grapenames}], [{Tons}], RecipesN, RecipesT, Qualitys, Total).";
+
+            var solution = prolog.GetFirstSolution(query: query);
+
+            if (solution.Solved)
+            {
+                string solutionString = solution.ToString();
+
+                Match rnMatch = Regex.Match(solutionString, @"RecipesN = (\[.*\])");
+                Match rtMatch = Regex.Match(solutionString, @"RecipesT = (\[.*\])");
+                Match qMatch = Regex.Match(solutionString, @"Qualitys = (\d+)");
+                Match tMatch = Regex.Match(solutionString, @"Total = (\d+)");
+
+
+
+
+                if (rnMatch.Success && tMatch.Success && qMatch.Success && tMatch.Success)
+                {
+                    string recipesNValue = rnMatch.Groups[1].Value;
+                    string recipesTValue = rtMatch.Groups[1].Value;
+                    string qualitysValue = qMatch.Groups[1].Value;
+                    string totalValue = tMatch.Groups[1].Value;
+
+
+                    // Remove square brackets and split by comma
+                    string[] recipeNArray = recipesNValue
+                        .Replace("[", "")
+                        .Replace("]", "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(item => item.Trim())
+                        .ToArray();
+
+                    string[] recipeTArray = recipesTValue
+                        .Replace("[", "")
+                        .Replace("]", "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(item => item.Trim())
+                        .ToArray();
+
+                    // Convert string array to float array
+                    float[] recipeT = recipeTArray
+                        .Select(item => float.Parse(item, NumberStyles.Any, CultureInfo.InvariantCulture))
+                        .ToArray();
+
+                    // Convert string array to int array
+                    int quality = int.Parse(qualitysValue);
+                    int total = int.Parse(totalValue);
+
+                    return Tuple.Create(recipeNArray, recipeT, quality, total);
+                }
+
+            }
+
+            return null;
+        }
+
+        
+         
+        public Tuple<string[], float[], int, int> make_recipe(string Grapenames, string Tons)
+        {
+
+            string query = $"make_recipe([{Grapenames}], [{Tons}], RecipesN, RecipesT, Qualitys, Total).";
+
+            var solution = prolog.GetFirstSolution(query: query);
+
+            if (solution.Solved)
+            {
+                string solutionString = solution.ToString();
+
+                Match rnMatch = Regex.Match(solutionString, @"RecipesN = (\[.*\])");
+                Match rtMatch = Regex.Match(solutionString, @"RecipesT = (\[.*\])");
+                Match qMatch = Regex.Match(solutionString, @"Qualitys = (\d+)");
+                Match tMatch = Regex.Match(solutionString, @"Total = (\d+)");
+
+
+
+
+                if (rnMatch.Success && tMatch.Success && qMatch.Success && tMatch.Success)
+                {
+                    string recipesNValue = rnMatch.Groups[1].Value;
+                    string recipesTValue = rtMatch.Groups[1].Value;
+                    string qualitysValue = qMatch.Groups[1].Value;
+                    string totalValue = tMatch.Groups[1].Value;
+
+
+                    // Remove square brackets and split by comma
+                    string[] recipeNArray = recipesNValue
+                        .Replace("[", "")
+                        .Replace("]", "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(item => item.Trim())
+                        .ToArray();
+
+                    string[] recipeTArray = recipesTValue
+                        .Replace("[", "")
+                        .Replace("]", "")
+                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(item => item.Trim())
+                        .ToArray();
+
+                    // Convert string array to float array
+                    float[] recipeT = recipeTArray
+                        .Select(item => float.Parse(item, NumberStyles.Any, CultureInfo.InvariantCulture))
+                        .ToArray();
+
+                    // Convert string array to int array
+                    int quality = int.Parse(qualitysValue);
+                    int total = int.Parse(totalValue);
+
+                    return Tuple.Create(recipeNArray, recipeT, quality, total);
+                }
+
+            }
+
+            return null;
+        }
+        //make_recipes(Grapenames, Tons, Recipes,Total)
+
+        public int color_predict(string[] gNames, float[] gTons)
         {
             int qValue = 0;
+
+            string Names = gNames[0];
+            string Tons = gTons[0].ToString("0.0", CultureInfo.InvariantCulture);
+
+            for (int i = 1; i < gNames.Length; i++)
+            {
+                if (gNames[i] != null)
+                {
+                    Names = Names + ',' + gNames[i];
+                    Tons = Tons + ',' + gTons[i].ToString("0.0", CultureInfo.InvariantCulture);
+                }
+            }
+
+
+
+
+            string query = $"color_predict([{Names}],[{Tons}],Color).";
+
+
+            var solution = prolog.GetFirstSolution(query: query);
+
+            if (solution.Solved)
+            {
+                string solutionString = solution.ToString();
+
+                Match qMatch = Regex.Match(solutionString, @"Color = (\d+)");
+
+                if (qMatch.Success)
+                {
+
+
+                    int.TryParse(qMatch.Groups[1].Value, out qValue);
+
+
+                }
+            }
+
+            return qValue;
+        }
+
+
+        public int aging(string[] gNames, float[] gTons)
+        {
+            int qValue = 0;
+
+
+            string Names = gNames[0];
+            string Tons = gTons[0].ToString("0.0", CultureInfo.InvariantCulture);
+
+            for (int i = 1; i < gNames.Length; i++)
+            {
+                if (gNames[i] != null)
+                {
+                    Names = Names + ',' + gNames[i];
+                    Tons = Tons + ',' + gTons[i].ToString("0.0", CultureInfo.InvariantCulture);
+                }
+            }
 
             string query = $"aging([{Names}],[{Tons}],Year).";
 
@@ -131,120 +312,6 @@ namespace Dawn_Winery.Prolog
 
             return qValue;
         }
-        //aging(Grapes, Tons, Year)
-
-        public Tuple<string[][], float[][], int[], int[]> make_recipes(string Grapenames, string Tons)
-        {
-
-            string query = $@"make_recipes([{Grapenames}], [{Tons}], RecipesN, RecipesT, Qualitys, Total).";
-
-            var solution = prolog.GetFirstSolution(query: query);
-
-            if (solution.Solved)
-            {
-                string solutionString = solution.ToString();
-
-                Match rnMatch = Regex.Match(solutionString, @"RecipesN = (\[.*\])");
-                Match rtMatch = Regex.Match(solutionString, @"RecipesT = (\[.*\])");
-                Match qMatch = Regex.Match(solutionString, @"Qualitys = (\[.*\])");
-                Match tMatch = Regex.Match(solutionString, @"Total = (\[.*\])");
-
-
-
-
-                if (rnMatch.Success && tMatch.Success)
-                {
-                    string recipesNValue = rnMatch.Groups[1].Value;
-
-                    // Köşeli parantezleri ve içindeki virgülü kullanarak ayırma
-                    string[] recipeNArray = recipesNValue
-                        .Replace("[[", "")  // İlk baştaki iki köşeli parantezi kaldır
-                        .Replace("]]", "")  // İlk sondaki iki köşeli parantezi kaldır
-                        .Split(new string[] { "], [" }, StringSplitOptions.None);
-
-                    // Her bir öğeyi virgül ile ayırarak iç içe dizileri oluştur
-                    string[][] recipeName = new string[recipeNArray.Length][];
-                    for (int i = 0; i < recipeNArray.Length; i++)
-                    {
-                        recipeName[i] = recipeNArray[i].Split(',');
-                    }
-
-
-                    string recipesTValue = rtMatch.Groups[1].Value;
-
-                    // Köşeli parantezleri ve içindeki virgülü kullanarak ayırma
-                    string[] recipeTArray = recipesTValue
-                        .Replace("[[", "")  // İlk baştaki iki köşeli parantezi kaldır
-                        .Replace("]]", "")  // İlk sondaki iki köşeli parantezi kaldır
-                        .Split(new string[] { "], [" }, StringSplitOptions.None);
-
-                    // Her bir öğeyi virgül ile ayırarak iç içe dizileri oluştur
-                    float[][] recipeT = new float[recipeTArray.Length][];
-                    for (int i = 0; i < recipeTArray.Length; i++)
-                    {
-                        string[] innerArray = recipeTArray[i].Split(',');
-                        recipeT[i] = new float[innerArray.Length];
-
-                        for (int j = 0; j < innerArray.Length; j++)
-                        {
-                            if (float.TryParse(innerArray[j], NumberStyles.Any, CultureInfo.InvariantCulture, out float result))
-                            {
-                                recipeT[i][j] = result;
-                            }
-                        }
-                    }
-
-
-                    string qualitysValue = qMatch.Groups[1].Value;
-
-                    string[] qualityArray = qualitysValue
-                        .Replace("[", "")  // İlk baştaki köşeli parantezi kaldır
-                        .Replace("]", "")  // İlk sondaki köşeli parantezi kaldır
-                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    // Her bir öğeyi int'e çevirerek quality dizisini oluştur
-                    int[] quality = new int[qualityArray.Length];
-                    for (int i = 0; i < qualityArray.Length; i++)
-                    {
-                        if (int.TryParse(qualityArray[i], out int result))
-                        {
-                            quality[i] = result;
-                        }
-
-                    }
-
-
-                    string totalValue = tMatch.Groups[1].Value;
-
-                    string[] totalArray = totalValue
-                        .Replace("[", "")  // İlk baştaki köşeli parantezi kaldır
-                        .Replace("]", "")  // İlk sondaki köşeli parantezi kaldır
-                        .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    // Her bir öğeyi int'e çevirerek quality dizisini oluştur
-                    int[] total = new int[totalArray.Length];
-                    for (int i = 0; i < totalArray.Length; i++)
-                    {
-                        if (int.TryParse(totalArray[i], out int result))
-                        {
-                            total[i] = result;
-                        }
-
-                    }
-
-                    return Tuple.Create(recipeName, recipeT, quality, total);
-                }
-
-
-            }
-
-            return null;
-        }
- 
-
-        //make_recipes(Grapenames, Tons, Recipes,Total)
-
-
 
     }
 }
